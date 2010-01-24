@@ -1,5 +1,8 @@
+========
 cronkite
 ========
+
+.. contents::
 
 Requirements
 ------------
