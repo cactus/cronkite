@@ -1,0 +1,71 @@
+:man manual: Cronkite Manual
+:man source: CRONKITE
+:man version: @PROJECT_VERSION@
+
+CRONKITE(1)
+===========
+
+NAME
+----
+cronkite - aurjson helper utility
+
+
+SYNOPSIS
+--------
+*cronkite* ['OPTIONS'] 'search-term'
+
+
+DESCRIPTION
+-----------
+The cronkite(1) command is a helper utility, for those writing AUR command line
+utilities. The goal is to ease the usage of the aurjson interface, by providing
+a pre-parsed output for more friendly grep'ing and sed'ing.
+
+
+OPTIONS
+-------
+*-search* 'SEARCH-TERM'::
+    Search for a package by 'SEARCH-TERM'.
+
+*-info* 'PKG-NAME::
+    Get info for a package named 'PKG-NAME'.
+
+*-version*::
+    Show version and exit.
+
+*-help*::
+    Show simple help and exit.
+
+
+EXIT STATUS
+-----------
+*0*:: 
+    Success
+
+*1*:: 
+    Failure
+
+*2*:: 
+    No results found, or results unparsable.
+    
+
+BUGS
+----
+Bugs!? No way! :P
+
+
+AUTHOR
+------
+cactus <elij.mx@gmail.com>
+
+
+RESOURCES
+---------
+Github: <http://github.com/cactus/cronkite>
+
+
+COPYING
+-------
+Free use of this software is granted under the terms of the Apache License,
+Version 2.0.
+
