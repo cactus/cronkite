@@ -20,16 +20,16 @@ Building
 
 There are a few build options, and their defaults, that you can specify:
 
-- NOGZIP = "OFF"
+- NOGZIP = ``OFF``
   Whether to disable compressing manpages with gzip. 
   Turn this on if you wish to disable gzip manpage compression,
   as some packaging utilities will do the gzip compression step for you.
 
-- CMAKE_INSTALL_PREFIX = "/usr/local"
+- CMAKE_INSTALL_PREFIX = ``/usr/local``
   The target prefix that make install will install to.
-  This is what you would expect from "./configure --prefix=foo"
+  This is what you would expect from ``./configure --prefix=foo``
 
-- CMAKE_BUILD_TYPE = "MinSizeRel"
+- CMAKE_BUILD_TYPE = ``MinSizeRel``
   Specifies the build type for make based generators.
   Possible values: Debug, Release, RelWithDebInfo, MinSizeRel
 
