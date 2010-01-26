@@ -29,7 +29,7 @@
 static void *myrealloc(void *ptr, size_t size) {
     if(ptr) {
         return realloc(ptr, size);
-    } 
+    }
     else {
         return malloc(size);
     }
@@ -54,8 +54,8 @@ static int cronkite_request(const char *url, struct MemoryStruct *response) {
 
     curl_global_init(CURL_GLOBAL_ALL);
     curl_handle = curl_easy_init();
-    if(!curl_handle) { 
-        return 1; 
+    if(!curl_handle) {
+        return 1;
     }
 
     curl_easy_setopt(curl_handle, CURLOPT_URL, url);
@@ -91,13 +91,13 @@ json_t *cronkite_get(const char qtype, const char *term) {
     struct MemoryStruct jdata;
     jdata.memory = NULL;
     jdata.size = 0;
-    
+
     if (qtype == 'i') {
         snprintf(url, URL_SIZE, URL_FORMAT, "info", term);
-    } 
+    }
     else if (qtype == 's') {
         snprintf(url, URL_SIZE, URL_FORMAT, "search", term);
-    } 
+    }
     else {
         return NULL;
     }
@@ -123,16 +123,28 @@ json_t *cronkite_get(const char qtype, const char *term) {
 static void print_objs(json_t *result) {
     int i=0;
     char *rnames[] = PKG_VALUES;
-    int size = sizeof(rnames) / sizeof(char *); 
+    char *delimiter;
+    char *default_delimiter = "\t";
+    int size = sizeof(rnames) / sizeof(char *);
+
+    delimiter = getenv("CRONKITE_DELIMITER");
+    if (delimiter == NULL) {
+        delimiter = default_delimiter;
+    }
 
     for (i=0; i<size; i++) {
-        char *fmt = (i < (size -1)) ? "%s\t" : "%s\n";
-
         json_t *rez = json_object_get(result, rnames[i]);
         if(!json_is_string(rez)) {
             fprintf(stderr, "error: %s is not a string\n", rnames[i]);
         }
-        printf(fmt, json_string_value(rez));
+
+        if (i < (size - 1)) {
+            printf("%s%s", json_string_value(rez), delimiter);
+        }
+        else {
+            printf("%s\n", json_string_value(rez));
+        }
+
         json_decref(rez);
     }
 }
