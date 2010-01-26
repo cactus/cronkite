@@ -37,6 +37,23 @@ OPTIONS
     Show simple help and exit.
 
 
+OUTPUT FORMAT
+-------------
+Each result in the output is emitted as a tab separated list, containing the
+following aurjson result elements, in this order:
+
+  Name
+  ID
+  Version
+  CategoryID
+  Description
+  URL
+  URLPath
+  License
+  NumVotes
+  OutOfDate
+
+
 EXIT STATUS
 -----------
 *0*:: 

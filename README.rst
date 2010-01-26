@@ -18,6 +18,7 @@ Run requirements:
 
 - libcurl
 
+
 Building
 --------
 
@@ -43,12 +44,14 @@ The build steps are::
     $ cmake -DNOGZIP=OFF -DCMAKE_INSTALL_PREFIX=/usr/local ..
     $ make
 
+
 Installing
 ----------
 
 After building, while in the build directory::
 
     $ make install
+
 
 Using
 -----
@@ -59,6 +62,24 @@ Here are some examples::
     > lots  of  data
     $ cronkite -info vim
     > info  about   package vim
+
+
+Output Format
+-------------
+Each result in the output is emitted as a tab separated list, containing the
+following aurjson result elements, in this order::
+
+    Name
+    ID
+    Version
+    CategoryID
+    Description
+    URL
+    URLPath
+    License
+    NumVotes
+    OutOfDate
+
 
 License
 -------

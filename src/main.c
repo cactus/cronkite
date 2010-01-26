@@ -120,17 +120,6 @@ json_t *cronkite_get(const char qtype, const char *term) {
 }
 
 
-static void print_objs_header() {
-    int i=0;
-    char *rnames[] = PKG_VALUES;
-    int size = sizeof(rnames) / sizeof(char *); 
-
-    for (i=0; i<size; i++) {
-        char *fmt = (i < (size -1)) ? "%s\t" : "%s\n";
-        printf(fmt, rnames[i]);
-    }
-}
-
 static void print_objs(json_t *result) {
     int i=0;
     char *rnames[] = PKG_VALUES;
@@ -190,7 +179,6 @@ int main(int argc, char *argv[]) {
 
     if(json_is_array(results)) {
         int i;
-        print_objs_header();
         for(i = 0; i < json_array_size(results); i++) {
             json_t *pkg;
 
@@ -205,7 +193,6 @@ int main(int argc, char *argv[]) {
         }
     }
     else if (json_is_object(results)) {
-        print_objs_header();
         print_objs(results);
     }
     else {

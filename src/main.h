@@ -24,6 +24,5 @@ static size_t write_callback(void *ptr, size_t size, size_t nmemb, void *data);
 static int cronkite_request(const char *url, struct MemoryStruct *response);
 json_t *cronkite_get(const char qtype, const char *term);
 static void print_objs(json_t *result);
-static void print_objs_header();
 static void print_version();
 static void print_help();
