@@ -64,10 +64,19 @@ Here are some examples::
     > info  about   package vim
 
 
+Environment
+-----------
+The following environment variables affect the execution of cronkite::
+
+- **CRONKITE_DELIMITER**
+  Specifies the delimiter/separator between the elements in the
+  Output Format. Defaults to ``\t`` if not set.
+
+
 Output Format
 -------------
-Each result in the output is emitted as a tab separated list, containing the
-following aurjson result elements, in this order::
+Each result in the output is emitted as a **CRONKITE_DELIMITER** separated list,
+containing the following aurjson result elements, in this order::
 
     Name
     ID
