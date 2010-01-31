@@ -18,7 +18,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <jansson.h>
+#include <cJson.h>
 #include <curl/curl.h>
 #include <curl/types.h>
 #include <curl/easy.h>
@@ -81,12 +81,11 @@ static int cronkite_request(const char *url, struct MemoryStruct *response) {
     return 0;
 }
 
-json_t *cronkite_get(const char qtype, const char *term) {
+cJSON *cronkite_get(const char qtype, const char *term) {
     int result;
     char url[URL_SIZE];
-    json_t *root;
-	json_t *jresults;
-    json_error_t error;
+    cJSON *root;
+    cJSON *jresults;
 
     struct MemoryStruct jdata;
     jdata.memory = NULL;
@@ -107,20 +106,20 @@ json_t *cronkite_get(const char qtype, const char *term) {
         return NULL;
     }
 
-    root = json_loads(jdata.memory, &error);
+    root = cJSON_Parse(jdata.memory);
     free(jdata.memory);
 
     if(!root) {
-        fprintf(stderr, "error: on line %d: %s\n", error.line, error.text);
+        fprintf(stderr, "error parsing json data\n");
         return NULL;
     }
 
-    jresults = json_object_get(root, "results");
+    jresults = cJSON_GetObjectItem(root, "results");
     return jresults;
 }
 
 
-static void print_objs(json_t *result) {
+static void print_objs(cJSON *result) {
     int i=0;
     char *rnames[] = PKG_VALUES;
     char *delimiter;
@@ -133,19 +132,17 @@ static void print_objs(json_t *result) {
     }
 
     for (i=0; i<size; i++) {
-        json_t *rez = json_object_get(result, rnames[i]);
-        if(!json_is_string(rez)) {
+        char *rez = cJSON_GetObjectItem(result, rnames[i])->valuestring;
+        if(!rez) {
             fprintf(stderr, "error: %s is not a string\n", rnames[i]);
         }
 
         if (i < (size - 1)) {
-            printf("%s%s", json_string_value(rez), delimiter);
+            printf("%s%s", rez, delimiter);
         }
         else {
-            printf("%s\n", json_string_value(rez));
+            printf("%s\n", rez);
         }
-
-        json_decref(rez);
     }
 }
 
@@ -167,7 +164,7 @@ static void print_help() {
 }
 
 int main(int argc, char *argv[]) {
-    json_t *results;
+    cJSON *results;
 
     /* handle command line arguments */
     if (argc == 2 && strcmp(argv[1],"-help") == 0) {
@@ -189,28 +186,29 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    if(json_is_array(results)) {
+    if(results->type == cJSON_Array) {
         int i;
-        for(i = 0; i < json_array_size(results); i++) {
-            json_t *pkg;
-
-            pkg = json_array_get(results, i);
-            if(!json_is_object(pkg)) {
-                fprintf(stderr, "error: pkg %d is not an object\n", i + 1);
-                continue;
-            }
-            else {
+        cJSON *pkg = results->child;
+        while (pkg) {
+            if (pkg->type == cJSON_Object) {
                 print_objs(pkg);
             }
+            else {
+                fprintf(stderr, "error: pkg %d is not an object\n", i + 1);
+            }
+            pkg = pkg->next;
         }
     }
-    else if (json_is_object(results)) {
+    else if (results->type == cJSON_Object) {
         print_objs(results);
     }
     else {
         /* no results or results not readable. Just exit. */
         return 2;
     }
+
+    /* cleanup */
+    cJSON_Delete(results);
 
     return 0;
 }
