@@ -187,14 +187,13 @@ int main(int argc, char *argv[]) {
     }
 
     if (results->type == cJSON_Array) {
-        int i;
         cJSON *pkg = results->child;
         while (pkg) {
             if (pkg->type == cJSON_Object) {
                 print_objs(pkg);
             }
             else {
-                fprintf(stderr, "error: pkg %d is not an object\n", i + 1);
+                fprintf(stderr, "error: pkg result not an object\n");
             }
             pkg = pkg->next;
         }
