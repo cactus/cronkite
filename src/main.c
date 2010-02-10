@@ -27,7 +27,7 @@
 
 
 static void *myrealloc(void *ptr, size_t size) {
-    if(ptr) {
+    if (ptr) {
         return realloc(ptr, size);
     }
     else {
@@ -54,7 +54,7 @@ static int cronkite_request(const char *url, struct MemoryStruct *response) {
 
     curl_global_init(CURL_GLOBAL_ALL);
     curl_handle = curl_easy_init();
-    if(!curl_handle) {
+    if (!curl_handle) {
         return 1;
     }
 
@@ -64,14 +64,14 @@ static int cronkite_request(const char *url, struct MemoryStruct *response) {
     curl_easy_setopt(curl_handle, CURLOPT_USERAGENT, UAGENT);
 
     status = curl_easy_perform(curl_handle);
-    if(status != 0) {
+    if (status != 0) {
         fprintf(stderr, "error: unable to request data from %s:\n", url);
         fprintf(stderr, "%s\n", curl_easy_strerror(status));
         return 1;
     }
 
     curl_easy_getinfo(curl_handle, CURLINFO_RESPONSE_CODE, &result_code);
-    if(result_code != 200) {
+    if (result_code != 200) {
         fprintf(stderr, "error: server responded with code %ld\n", result_code);
         return 1;
     }
@@ -109,7 +109,7 @@ cJSON *cronkite_get(const char qtype, const char *term) {
     root = cJSON_Parse(jdata.memory);
     free(jdata.memory);
 
-    if(!root) {
+    if (!root) {
         fprintf(stderr, "error parsing json data\n");
         return NULL;
     }
@@ -133,7 +133,7 @@ static void print_objs(cJSON *result) {
 
     for (i=0; i<size; i++) {
         char *rez = cJSON_GetObjectItem(result, rnames[i])->valuestring;
-        if(!rez) {
+        if (!rez) {
             fprintf(stderr, "error: %s is not a string\n", rnames[i]);
         }
 
@@ -186,7 +186,7 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    if(results->type == cJSON_Array) {
+    if (results->type == cJSON_Array) {
         int i;
         cJSON *pkg = results->child;
         while (pkg) {
