@@ -65,8 +65,8 @@ static int cronkite_request(const char *url, struct MemoryStruct *response) {
 
     status = curl_easy_perform(curl_handle);
     if (status != 0) {
-        fprintf(stderr, "error: unable to request data from %s:\n", url);
-        fprintf(stderr, "%s\n", curl_easy_strerror(status));
+        fprintf(stderr, "error: unable to request data from %s\n", url);
+        fprintf(stderr, " %s\n", curl_easy_strerror(status));
         return 1;
     }
 
