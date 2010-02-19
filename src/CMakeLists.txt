@@ -1,4 +1,4 @@
-subdirs(cJson)
+subdirs(cJSON)
 subdirs(man)
 
 configure_file(
@@ -7,8 +7,8 @@ configure_file(
     @ONLY)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(SOURCES main.c)
-include_directories(cJson)
+include_directories(cJSON)
 add_executable(cronkite ${SOURCES})
-link_directories(cJson)
-target_link_libraries(cronkite ${CURL_LIBRARY} cJson)
+link_directories(cJSON)
+target_link_libraries(cronkite ${CURL_LIBRARY} cJSON)
 install(TARGETS cronkite DESTINATION "bin")
