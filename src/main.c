@@ -52,7 +52,7 @@ static int cronkite_request(const char *url, struct MemoryStruct *response) {
     CURLcode status;
     long result_code;
 
-    curl_global_init(CURL_GLOBAL_ALL);
+    curl_global_init(CURL_GLOBAL_NOTHING);
     curl_handle = curl_easy_init();
     if (!curl_handle) {
         return 1;
@@ -85,7 +85,6 @@ cJSON *cronkite_get(const char qtype, const char *term) {
     int result;
     char url[URL_SIZE];
     cJSON *root;
-    cJSON *jresults;
 
     struct MemoryStruct jdata;
     jdata.memory = NULL;
@@ -114,8 +113,7 @@ cJSON *cronkite_get(const char qtype, const char *term) {
         return NULL;
     }
 
-    jresults = cJSON_GetObjectItem(root, "results");
-    return jresults;
+    return root;
 }
 
 
@@ -164,7 +162,9 @@ static void print_help() {
 }
 
 int main(int argc, char *argv[]) {
+    cJSON *root;
     cJSON *results;
+    char qtype='s';
 
     /* handle command line arguments */
     if (argc == 2 && strcmp(argv[1],"-help") == 0) {
@@ -176,15 +176,18 @@ int main(int argc, char *argv[]) {
         return 0;
     }
     else if (argc == 3 && strcmp(argv[1],"-search") == 0) {
-        results = cronkite_get('s', argv[2]);
+        qtype='s';
     }
     else if (argc == 3 && strcmp(argv[1],"-info") == 0) {
-        results = cronkite_get('i', argv[2]);
+        qtype='i';
     }
     else {
         print_help();
         return 1;
     }
+
+    root = cronkite_get(qtype, argv[2]);
+    results = cJSON_GetObjectItem(root, "results");
 
     if (results->type == cJSON_Array) {
         cJSON *pkg = results->child;
@@ -207,7 +210,7 @@ int main(int argc, char *argv[]) {
     }
 
     /* cleanup */
-    cJSON_Delete(results);
+    cJSON_Delete(root);
 
     return 0;
 }
