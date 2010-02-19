@@ -26,3 +26,4 @@ cJSON *cronkite_get(const char qtype, const char *term);
 static void print_objs(cJSON *result);
 static void print_version();
 static void print_help();
+static void cronkite_cleanup();

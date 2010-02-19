@@ -161,19 +161,28 @@ static void print_help() {
     fprintf(stderr, "\n");
 }
 
+static void cronkite_cleanup() {
+    /* flush and close fds */
+    fflush(NULL); /* flush all open streams */
+    close(0);
+    close(1);
+    close(2);
+}
+
 int main(int argc, char *argv[]) {
     cJSON *root;
     cJSON *results;
     char qtype='s';
 
+    atexit(cronkite_cleanup);
     /* handle command line arguments */
     if (argc == 2 && strcmp(argv[1],"-help") == 0) {
         print_help();
-        return 0;
+        exit(0);
     }
     else if (argc == 2 && strcmp(argv[1],"-version") == 0) {
         print_version();
-        return 0;
+        exit(0);
     }
     else if (argc == 3 && strcmp(argv[1],"-search") == 0) {
         qtype='s';
@@ -183,7 +192,7 @@ int main(int argc, char *argv[]) {
     }
     else {
         print_help();
-        return 1;
+        exit(1);
     }
 
     root = cronkite_get(qtype, argv[2]);
@@ -206,12 +215,11 @@ int main(int argc, char *argv[]) {
     }
     else {
         /* no results or results not readable. Just exit. */
-        return 2;
+        exit(2);
     }
 
-    /* cleanup */
+    /* cJSON cleanup */
     cJSON_Delete(root);
-
     return 0;
 }
 
