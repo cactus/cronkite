@@ -8,7 +8,7 @@ endif(NOT NOGZIP)
 
 find_program(A2X a2x)
 if(NOT A2X)
-    MESSAGE(FATAL_ERROR "Unable to find 'a2x' from asciidoc")
+    MESSAGE(WARNING "Unable to find 'a2x' from asciidoc. Skipping manpage target.")
 endif(NOT A2X)
 
 if(A2X)
