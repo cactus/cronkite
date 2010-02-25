@@ -126,6 +126,7 @@ static void print_objs(cJSON *result) {
     char *rnames[] = PKG_VALUES;
     char *delimiter;
     char *default_delimiter = "\t";
+    cJSON *element;
     int size = sizeof(rnames) / sizeof(char *);
 
     delimiter = getenv("CRONKITE_DELIMITER");
@@ -134,9 +135,16 @@ static void print_objs(cJSON *result) {
     }
 
     for (i=0; i<size; i++) {
-        char *rez = cJSON_GetObjectItem(result, rnames[i])->valuestring;
-        if (!rez) {
-            fprintf(stderr, "error: %s is not a string\n", rnames[i]);
+        char *rez = "NULL";
+        element = cJSON_GetObjectItem(result, rnames[i]);
+        if (!element) {
+            fprintf(stderr, "error: %s could not be decoded\n", rnames[i]);
+        }
+        else {
+            rez = element->valuestring;
+            if (!rez) {
+                fprintf(stderr, "error: %s is not a string\n", rnames[i]);
+            }
         }
 
         if (i < (size - 1)) {

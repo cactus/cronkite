@@ -24,6 +24,9 @@ a pre-parsed output for more friendly grep'ing and sed'ing.
 
 OPTIONS
 -------
+*-msearch* 'MAINTAINER-NAME'::
+    Search for a package by 'MAINTAINER-NAME'.
+
 *-search* 'SEARCH-TERM'::
     Search for a package by 'SEARCH-TERM'.
 

@@ -23,6 +23,6 @@
 
 #define URL_FORMAT "http://aur.archlinux.org/rpc.php?type=%s&arg=%s"
 #define URL_SIZE 256
-#define PKG_VALUES { "Name", "ID", "Version", "CategoryID", "Description", "URL", "URLPath", "License", "NumVotes", "OutOfDate"}
+#define PKG_VALUES { "Name", "ID", "Version", "CategoryID", "Description", "URL", "URLPath", "License", "NumVotes", "OutOfDate" }
 
 #endif
