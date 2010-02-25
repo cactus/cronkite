@@ -62,6 +62,7 @@ static int cronkite_request(const char *url, struct MemoryStruct *response) {
     curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, write_callback);
     curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, (void *)response);
     curl_easy_setopt(curl_handle, CURLOPT_USERAGENT, UAGENT);
+    curl_easy_setopt(curl_handle, CURLOPT_ENCODING, "gzip,deflate");
 
     status = curl_easy_perform(curl_handle);
     if (status != 0) {
