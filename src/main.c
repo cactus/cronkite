@@ -97,6 +97,9 @@ cJSON *cronkite_get(const char qtype, const char *term) {
     else if (qtype == 's') {
         snprintf(url, URL_SIZE, URL_FORMAT, "search", term);
     }
+    else if (qtype == 'm') {
+        snprintf(url, URL_SIZE, URL_FORMAT, "msearch", term);
+    }
     else {
         return NULL;
     }
@@ -152,6 +155,8 @@ static void print_version() {
 static void print_help() {
     fprintf(stderr, "Usage: %s [OPTION] [OPTION-ARGUMENT]\n\n", NAME);
     fprintf(stderr, "Options:\n");
+    fprintf(stderr, "\t-msearch <search-term>\n");
+    fprintf(stderr, "\t\tPerform an aurjson msearch operation.\n");
     fprintf(stderr, "\t-search <search-term>\n");
     fprintf(stderr, "\t\tPerform an aurjson search operation.\n");
     fprintf(stderr, "\t-info <package-name>\n");
@@ -184,6 +189,9 @@ int main(int argc, char *argv[]) {
     else if (argc == 2 && strcmp(argv[1],"-version") == 0) {
         print_version();
         exit(0);
+    }
+    else if (argc == 3 && strcmp(argv[1],"-msearch") == 0) {
+        qtype='m';
     }
     else if (argc == 3 && strcmp(argv[1],"-search") == 0) {
         qtype='s';
