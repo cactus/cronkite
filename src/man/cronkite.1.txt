@@ -1,3 +1,7 @@
+// this is an asciidoc formatted man page
+// created with: 
+//   a2x -d manpage -f manpage cronkite.1.txt
+//
 :man manual: Cronkite Manual
 :man source: CRONKITE
 :man version: @PROJECT_VERSION@
@@ -12,7 +16,7 @@ cronkite - aurjson helper utility
 
 SYNOPSIS
 --------
-*cronkite* ['OPTIONS'] 'search-term'
+*cronkite* ['OPTIONS'] ['OPTION-ARGUMENTS']
 
 
 DESCRIPTION
