@@ -22,9 +22,9 @@
 #include <curl/curl.h>
 #include <curl/types.h>
 #include <curl/easy.h>
+#include "cronkite.h"
+#include "cronkite_p.h"
 #include "config.h"
-#include "main.h"
-
 
 static void *myrealloc(void *ptr, size_t size) {
     if (ptr) {
@@ -37,7 +37,7 @@ static void *myrealloc(void *ptr, size_t size) {
 
 static size_t write_callback(void *ptr, size_t size, size_t nmemb, void *data) {
     size_t realsize = size * nmemb;
-    struct MemoryStruct *mem = (struct MemoryStruct *)data;
+    struct CKMemoryStruct *mem = (struct CKMemoryStruct *)data;
     mem->memory = myrealloc(mem->memory, mem->size + realsize + 1);
     if (mem->memory) {
         memcpy(&(mem->memory[mem->size]), ptr, realsize);
@@ -47,7 +47,7 @@ static size_t write_callback(void *ptr, size_t size, size_t nmemb, void *data) {
     return realsize;
 }
 
-static int cronkite_request(const char *url, struct MemoryStruct *response) {
+static int cronkite_request(const char *url, struct CKMemoryStruct *response) {
     CURL *curl_handle;
     CURLcode status;
     long result_code;
@@ -82,12 +82,12 @@ static int cronkite_request(const char *url, struct MemoryStruct *response) {
     return 0;
 }
 
-cJSON *cronkite_get(const char qtype, const char *term) {
+static cJSON *cronkite_ifetch(const char qtype, const char *term) {
     int result;
     char url[URL_SIZE];
     cJSON *root;
 
-    struct MemoryStruct jdata;
+    struct CKMemoryStruct jdata;
     jdata.memory = NULL;
     jdata.size = 0;
 
@@ -120,123 +120,94 @@ cJSON *cronkite_get(const char qtype, const char *term) {
     return root;
 }
 
-
-static void print_objs(cJSON *result) {
-    int i=0;
-    char *rnames[] = PKG_VALUES;
-    char *delimiter;
-    char *default_delimiter = "\t";
+static char *cronkite_get_obj(cJSON *elem, char *name) {
+    char *rval;
     cJSON *element;
-    int size = sizeof(rnames) / sizeof(char *);
+    int len=0;
 
-    delimiter = getenv("CRONKITE_DELIMITER");
-    if (delimiter == NULL) {
-        delimiter = default_delimiter;
-    }
-
-    for (i=0; i<size; i++) {
-        char *rez = "NULL";
-        element = cJSON_GetObjectItem(result, rnames[i]);
-        if (!element) {
-            fprintf(stderr, "error: %s could not be decoded\n", rnames[i]);
-        }
-        else {
-            rez = element->valuestring;
-            if (!rez) {
-                fprintf(stderr, "error: %s is not a string\n", rnames[i]);
-            }
-        }
-
-        if (i < (size - 1)) {
-            printf("%s%s", rez, delimiter);
-        }
-        else {
-            printf("%s\n", rez);
-        }
-    }
-}
-
-static void print_version() {
-    fprintf(stderr, "%s-%s\n", NAME, VERSION);
-}
-
-static void print_help() {
-    fprintf(stderr, "Usage: %s [OPTION] [OPTION-ARGUMENT]\n\n", NAME);
-    fprintf(stderr, "Options:\n");
-    fprintf(stderr, "\t-msearch <search-term>\n");
-    fprintf(stderr, "\t\tPerform an aurjson msearch operation.\n");
-    fprintf(stderr, "\t-search <search-term>\n");
-    fprintf(stderr, "\t\tPerform an aurjson search operation.\n");
-    fprintf(stderr, "\t-info <package-name>\n");
-    fprintf(stderr, "\t\tPerform an aurjson info operation.\n");
-    fprintf(stderr, "\t-version\n\t\tShow version and exit.\n");
-    fprintf(stderr, "\t-help\n");
-    fprintf(stderr, "\t\tShow simple help and exit.\n");
-    fprintf(stderr, "\n");
-}
-
-static void cronkite_cleanup() {
-    /* flush and close fds */
-    fflush(NULL); /* flush all open streams */
-    close(0);
-    close(1);
-    close(2);
-}
-
-int main(int argc, char *argv[]) {
-    cJSON *root;
-    cJSON *results;
-    char qtype='s';
-
-    atexit(cronkite_cleanup);
-    /* handle command line arguments */
-    if (argc == 2 && strcmp(argv[1],"-help") == 0) {
-        print_help();
-        exit(0);
-    }
-    else if (argc == 2 && strcmp(argv[1],"-version") == 0) {
-        print_version();
-        exit(0);
-    }
-    else if (argc == 3 && strcmp(argv[1],"-msearch") == 0) {
-        qtype='m';
-    }
-    else if (argc == 3 && strcmp(argv[1],"-search") == 0) {
-        qtype='s';
-    }
-    else if (argc == 3 && strcmp(argv[1],"-info") == 0) {
-        qtype='i';
+    element = cJSON_GetObjectItem(elem, name);
+    if (!element) {
+        rval = "NULL";
     }
     else {
-        print_help();
-        exit(1);
+        if (!element->valuestring) {
+            rval = "NULL";
+        }
+        else {
+            len = strlen(element->valuestring);
+            rval = (char *)malloc((len+1) * sizeof(char *));
+            strncpy(rval, element->valuestring, len);
+            rval[len] = '\0'; /* make sure it is null terminated */
+        }
     }
+    return rval;
+}
 
-    root = cronkite_get(qtype, argv[2]);
+static CKPackage *cronkite_pack_result(cJSON *result) {
+    CKPackage *pkg = (CKPackage *) malloc(sizeof(CKPackage));
+    pkg->values[CKPKG_ID] = cronkite_get_obj(result, "id");
+    pkg->values[CKPKG_URL] = cronkite_get_obj(result, "url");
+    pkg->values[CKPKG_NAME] = cronkite_get_obj(result, "name");
+    pkg->values[CKPKG_VERSION] = cronkite_get_obj(result, "version");
+    pkg->values[CKPKG_URLPATH] = cronkite_get_obj(result, "urlpath");
+    pkg->values[CKPKG_LICENSE] = cronkite_get_obj(result, "license");
+    pkg->values[CKPKG_NUMVOTES] = cronkite_get_obj(result, "numvotes");
+    pkg->values[CKPKG_OUTOFDATE] = cronkite_get_obj(result, "outofdate");
+    pkg->values[CKPKG_CATEGORYID] = cronkite_get_obj(result, "categoryid");
+    pkg->values[CKPKG_DESCRIPTION] = cronkite_get_obj(result, "description");
+    return pkg;
+}
+
+extern void cronkite_cleanup(CKPackage *ckpackage) {
+    int j = 0;
+    CKPackage *ckpkg = ckpackage;
+    CKPackage *next;
+    char *ptr;
+    while (ckpkg) {
+        for (j=0; j<CKPKG_VAL_CNT; j++) {
+            ptr = ckpkg->values[j];
+            free(ptr);
+        }
+        next = ckpkg->next;
+        free(ckpkg);
+        ckpkg = next;
+    }
+}
+
+extern CKPackage *cronkite_get(char t, char *term) {
+    cJSON *root;
+    cJSON *results;
+    CKPackage *ckpkg = NULL;
+    CKPackage *head = NULL;
+    int iter = 0;
+
+    root = cronkite_ifetch(t, term);
     results = cJSON_GetObjectItem(root, "results");
-
     if (results->type == cJSON_Array) {
         cJSON *pkg = results->child;
         while (pkg) {
             if (pkg->type == cJSON_Object) {
-                print_objs(pkg);
-            }
-            else {
-                fprintf(stderr, "error: pkg result not an object\n");
+                if (iter == 0) { /* means first iter */
+                    ckpkg = cronkite_pack_result(pkg);
+                    head = ckpkg;
+                }
+                else {
+                    ckpkg->next = cronkite_pack_result(pkg);
+                    ckpkg = ckpkg->next;
+                }
             }
             pkg = pkg->next;
+            iter++;
         }
     }
     else if (results->type == cJSON_Object) {
-        print_objs(results);
+        ckpkg = cronkite_pack_result(results);
+        head = ckpkg;
     }
-    else {
-        /* no results or results not readable. Just exit. */
-        exit(2);
-    }
+    ckpkg->next = NULL;
 
     /* cJSON cleanup */
     cJSON_Delete(root);
-    return 0;
+    return head;
 }
 

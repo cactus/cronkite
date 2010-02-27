@@ -1,10 +1,13 @@
 cmake_minimum_required(VERSION 2.6) 
 project(cronkite C)
 
-set(PROJECT_VERSION "0.2.2")
+set(BUILD_VERSION "0.3.0")
+set(API_VERSION "0.3")
+set(PROJECT_VERSION ${BUILD_VERSION})
+
 set(CMAKE_SHARED_LINKER_FLAGS 
     "-Wl,--hash-style=gnu -Wl,--as-needed -Wl,--no-undefined $ENV{LDFLAGS}")
-set(CMAKE_C_FLAGS_DEBUG 
+set(CMAKE_C_FLAGS_DEBUG
     "-g -Wall -std=c99 -pedantic $ENV{CFLAGS}")
 set(CMAKE_C_FLAGS_RELEASE 
     "-Wall -mtune=generic -O2 -pipe $ENV{CFLAGS}")

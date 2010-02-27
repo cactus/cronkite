@@ -1,0 +1,52 @@
+// this is an asciidoc formatted man page
+:man manual: libcronkite api documentation
+:man source: libcronkite
+:man version: {revnumber}
+
+libcronkite(3)
+==============
+
+NAME
+----
+libcronkite - a library used to fetch and preparse aur/aurjson data.
+
+
+SYNOPSIS
+--------
+The archlinux aur.rpc mechanism requires url creation, json data fetching over
+http, json data parsing, and eventual presentation to the end user.
+
+The libcronkite library helps by doing all but the last step.
+
+
+INTERFACES
+----------
+The libcronkite library provides the following interfaces:
+
+*cronkite_get*::
+    The query/poll interface.
+
+*cronkite_cleanup*::
+    The cleanup inerface.
+
+
+BUGS
+----
+Quite possible. Submit bugs to the github site listed in 'RESOURCES' below.
+
+
+AUTHOR
+------
+cactus <elij.mx@gmail.com>
+
+
+RESOURCES
+---------
+Github: <http://github.com/cactus/cronkite>
+
+
+COPYING
+-------
+Free use of this software is granted under the terms of the Apache License,
+Version 2.0.
+

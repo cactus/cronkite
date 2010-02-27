@@ -1,12 +1,9 @@
 // this is an asciidoc formatted man page
-// created with: 
-//   a2x -d manpage -f manpage cronkite.1.txt
-//
-:man manual: Cronkite Manual
-:man source: CRONKITE
-:man version: @PROJECT_VERSION@
+:man manual: cronkite manual
+:man source: cronkite
+:man version: {revnumber}
 
-CRONKITE(1)
+cronkite(1)
 ===========
 
 NAME
@@ -24,6 +21,8 @@ DESCRIPTION
 The cronkite(1) command is a helper utility, for those writing AUR command line
 utilities. The goal is to ease the usage of the aurjson interface, by providing
 a pre-parsed output for more friendly grep'ing and sed'ing.
+
+cronkite is powered by libcronkite. See libcronkite(3) for more details.
 
 
 OPTIONS

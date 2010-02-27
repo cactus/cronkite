@@ -14,16 +14,14 @@
  * under the License.
 **/
 
-struct MemoryStruct {
+struct CKMemoryStruct {
     char *memory;
     size_t size;
 };
 
 static void *myrealloc(void *ptr, size_t size);
 static size_t write_callback(void *ptr, size_t size, size_t nmemb, void *data);
-static int cronkite_request(const char *url, struct MemoryStruct *response);
-cJSON *cronkite_get(const char qtype, const char *term);
-static void print_objs(cJSON *result);
-static void print_version();
-static void print_help();
-static void cronkite_cleanup();
+static int cronkite_request(const char *url, struct CKMemoryStruct *response);
+static cJSON *cronkite_ifetch(const char qtype, const char *term);
+static char *cronkite_get_obj(cJSON *elem, char *name);
+static CKPackage *cronkite_pack_result(cJSON *result);

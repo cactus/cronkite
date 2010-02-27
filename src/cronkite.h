@@ -14,14 +14,25 @@
  * under the License.
 **/
 
-#ifndef CONFIG_H
-#define CONFIG_H
+#define CKPKG_VAL_CNT 10
 
-#define NAME "@PROJECT_NAME@"
-#define VERSION "@PROJECT_VERSION@"
-#define UAGENT "@PROJECT_NAME@/@PROJECT_VERSION@"
+typedef enum CKPKG_VAL {
+    CKPKG_ID = 0,
+    CKPKG_URL = 1,
+    CKPKG_NAME = 2,
+    CKPKG_VERSION = 3,
+    CKPKG_URLPATH = 4,
+    CKPKG_LICENSE = 5,
+    CKPKG_NUMVOTES = 6,
+    CKPKG_OUTOFDATE = 7,
+    CKPKG_CATEGORYID = 8,
+    CKPKG_DESCRIPTION = 9
+} CKPKG_VAL;
 
-#define URL_FORMAT "http://aur.archlinux.org/rpc.php?type=%s&arg=%s"
-#define URL_SIZE 256
+typedef struct CKPackage {
+    char *values[CKPKG_VAL_CNT];
+    struct CKPackage *next;
+} CKPackage;
 
-#endif
+extern CKPackage *cronkite_get(char t, char *term);
+extern void cronkite_cleanup(CKPackage *ckresult);

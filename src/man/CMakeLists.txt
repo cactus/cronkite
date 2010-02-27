@@ -1,38 +1,25 @@
-option(NOGZIP "Disable GZIP of manpages" OFF)
-if(NOT NOGZIP)
-    find_program(GZIP gzip)
-    if(NOT GZIP)
-         MESSAGE(WARNING "Could not find 'gzip'. Not compression manpages.")
-    endif(NOT GZIP)
-endif(NOT NOGZIP)
-
+include(BuildManpage)
 find_program(A2X a2x)
+
 if(NOT A2X)
-    MESSAGE(WARNING "Unable to find 'a2x' from asciidoc. Skipping manpage target.")
-endif(NOT A2X)
-
-if(A2X)
-    set(MANPAGE cronkite.1)
-    configure_file(
-        ${CMAKE_CURRENT_SOURCE_DIR}/${MANPAGE}.txt 
-        ${CMAKE_CURRENT_BINARY_DIR}/${MANPAGE}.txt.out @ONLY)
-    add_custom_command(
-        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${MANPAGE}
-        COMMAND ${A2X} -d manpage -f manpage -D ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_BINARY_DIR}/${MANPAGE}.txt.out
-        DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${MANPAGE}.txt.out)
-    if(GZIP)
-        add_custom_command(
-            OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${MANPAGE}.gz
-            COMMAND ${GZIP} -c ${CMAKE_CURRENT_BINARY_DIR}/${MANPAGE} > ${CMAKE_CURRENT_BINARY_DIR}/${MANPAGE}.gz
-            DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${MANPAGE})
-        set(MANPAGE ${MANPAGE}.gz)
-    endif(GZIP)
-    add_custom_target(
-        manpage ALL
-        DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${MANPAGE})
-    install(
-        FILES ${CMAKE_CURRENT_BINARY_DIR}/${MANPAGE}
-        DESTINATION "share/man/man1"
+    MESSAGE(WARNING "Unable to find 'a2x' from asciidoc. Skipping man build.")
+else(NOT A2X)
+    a2x_build_manpage(manpage_depends
+        cronkite.1.txt cronkite.1 ${BUILD_VERSION})
+    a2x_build_manpage(manpage_depends
+        libcronkite.3.txt libcronkite.3 ${BUILD_VERSION})
+    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/cronkite_get.3
+        ".so man3/libcronkite.3\n")
+    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/cronkite_cleanup.3
+        ".so man3/libcronkite.3\n")
+    ## prebuild manpages
+    install(FILES
+        ${CMAKE_CURRENT_BINARY_DIR}/cronkite_get.3
+        ${CMAKE_CURRENT_BINARY_DIR}/cronkite_cleanup.3
+        DESTINATION "share/man/man3"
         PERMISSIONS OWNER_READ GROUP_READ WORLD_READ)
-endif(A2X)
-
+    add_custom_target(manpage ALL
+        DEPENDS ${manpage_depends}
+            ${CMAKE_CURRENT_BINARY_DIR}/cronkite_get.3
+            ${CMAKE_CURRENT_BINARY_DIR}/cronkite_cleanup.3)
+endif(NOT A2X)
