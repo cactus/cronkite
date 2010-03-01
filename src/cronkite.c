@@ -158,7 +158,7 @@ static CKPackage *cronkite_pack_result(cJSON *result) {
     return pkg;
 }
 
-extern void cronkite_cleanup(CKPackage *ckpackage) {
+void cronkite_cleanup(CKPackage *ckpackage) {
     int j = 0;
     CKPackage *ckpkg = ckpackage;
     CKPackage *next;
@@ -174,7 +174,7 @@ extern void cronkite_cleanup(CKPackage *ckpackage) {
     }
 }
 
-extern CKPackage *cronkite_get(char t, char *term) {
+CKPackage *cronkite_get(char t, char *term) {
     cJSON *root;
     cJSON *results;
     CKPackage *ckpkg = NULL;

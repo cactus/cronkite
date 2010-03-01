@@ -9,7 +9,7 @@ set(PROJECT_VERSION ${BUILD_VERSION})
 #set(CMAKE_SHARED_LINKER_FLAGS 
     #"-Wl,--hash-style=gnu -Wl,--as-needed -Wl,--no-undefined $ENV{LDFLAGS}")
 set(CMAKE_C_FLAGS_DEBUG
-    "-g -Wall -std=c99 -pedantic $ENV{CFLAGS}")
+    "-g -Wall -Werror -std=c99 -pedantic $ENV{CFLAGS}")
 set(CMAKE_C_FLAGS_RELEASE 
     "-Wall -mtune=generic -O2 -pipe $ENV{CFLAGS}")
 set(CMAKE_C_FLAGS_MINSIZEREL 
