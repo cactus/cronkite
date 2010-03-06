@@ -155,6 +155,7 @@ static CKPackage *cronkite_pack_result(cJSON *result) {
     pkg->values[CKPKG_OUTOFDATE] = cronkite_get_obj(result, "outofdate");
     pkg->values[CKPKG_CATEGORYID] = cronkite_get_obj(result, "categoryid");
     pkg->values[CKPKG_DESCRIPTION] = cronkite_get_obj(result, "description");
+    pkg->next = NULL;
     return pkg;
 }
 
@@ -204,7 +205,6 @@ CKPackage *cronkite_get(char t, char *term) {
         ckpkg = cronkite_pack_result(results);
         head = ckpkg;
     }
-    ckpkg->next = NULL;
 
     /* cJSON cleanup */
     cJSON_Delete(root);
