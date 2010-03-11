@@ -83,7 +83,6 @@ static int cronkite_request(const char *url, struct CKMemoryStruct *response) {
 }
 
 static cJSON *cronkite_ifetch(const char qtype, const char *term) {
-    int result;
     char url[URL_SIZE];
     cJSON *root;
 
@@ -104,8 +103,7 @@ static cJSON *cronkite_ifetch(const char qtype, const char *term) {
         return NULL;
     }
 
-    result = cronkite_request(url, &jdata);
-    if (result != 0) {
+    if (0 != cronkite_request(url, &jdata)) {
         return NULL;
     }
 
