@@ -31,7 +31,7 @@ static void *myrealloc(void *ptr, size_t size) {
         return realloc(ptr, size);
     }
     else {
-        return malloc(size);
+        return calloc(1,size);
     }
 }
 
@@ -135,7 +135,7 @@ static char *cronkite_get_obj(cJSON *elem, char *name) {
         }
         else {
             len = strlen(element->valuestring);
-            rval = (char *)malloc((len+1) * sizeof(char *));
+            rval = (char *)calloc(len+1, sizeof(char *));
             strncpy(rval, element->valuestring, len);
             rval[len] = '\0'; /* make sure it is null terminated */
         }
@@ -144,7 +144,7 @@ static char *cronkite_get_obj(cJSON *elem, char *name) {
 }
 
 static CKPackage *cronkite_pack_result(cJSON *result) {
-    CKPackage *pkg = (CKPackage *) malloc(sizeof(CKPackage));
+    CKPackage *pkg = (CKPackage *) calloc(1, sizeof(CKPackage));
     pkg->values[CKPKG_ID] = cronkite_get_obj(result, "id");
     pkg->values[CKPKG_URL] = cronkite_get_obj(result, "url");
     pkg->values[CKPKG_NAME] = cronkite_get_obj(result, "name");
