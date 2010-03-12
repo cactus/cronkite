@@ -1,6 +1,6 @@
-========
-cronkite
-========
+============
+cronkite-cli
+============
 
 .. contents::
 
@@ -12,11 +12,13 @@ Build requirements:
 - cmake
 - gcc
 - libcurl
+- libcronkite
 - a2x / asciidoc (required to build manpages)
 
 Run requirements:
 
 - libcurl
+- libcronkite
 
 
 Building
