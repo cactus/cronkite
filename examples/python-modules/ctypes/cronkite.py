@@ -19,13 +19,16 @@ import sys
 import os
 import exceptions
 
+class CronkiteException(Exception):
+    pass
+
 class CKPackage(Structure):
     pass
 
 CKPackage._fields_ = [("values", c_char_p * 10), ("next", POINTER(CKPackage))]
 
 _libcronkite = cdll.LoadLibrary(find_library("cronkite"))
-_libcronkite.cronkite_get.argtypes = [c_char, c_char_p]
+_libcronkite.cronkite_get.argtypes = [c_char_p, c_char, c_char_p]
 _libcronkite.cronkite_get.restype = POINTER(CKPackage)
 _libcronkite.cronkite_cleanup.argtypes = [POINTER(CKPackage)]
 _libcronkite.cronkite_cleanup.restype = c_void_p
@@ -47,7 +50,11 @@ def query(qtype, qstring):
         raise exceptions.TypeError("argument 1 must be 'i', 's', or 'm'")
         return
     results = []
-    pkg = _libcronkite.cronkite_get(qtype, qstring)
+    pkg = _libcronkite.cronkite_get(
+        "http://aur.archlinux.org/rpc.php?type=%s&arg=%s", qtype, qstring)
+    if bool(pkg) == False:
+        raise CronkiteException("Error communicating with server.")
+        return results
     if pkg:
         results.append(q_unpack(pkg))
         next = pkg.contents.next

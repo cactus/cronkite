@@ -16,12 +16,7 @@
 
 #ifndef CONFIG_H
 #define CONFIG_H
-
 #define NAME "@PROJECT_NAME@"
 #define VERSION "@PROJECT_VERSION@"
 #define UAGENT "@PROJECT_NAME@/@PROJECT_VERSION@"
-
-#define URL_FORMAT "http://aur.archlinux.org/rpc.php?type=%s&arg=%s"
-#define URL_SIZE 256
-
 #endif

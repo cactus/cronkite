@@ -23,10 +23,3 @@ set_target_properties(cronkite PROPERTIES
 install(TARGETS cronkite
     LIBRARY DESTINATION lib
     PUBLIC_HEADER DESTINATION include)
-
-# build cronkite cli binary
-add_executable(cronkite-cli cli.c)
-target_link_libraries(cronkite-cli cronkite)
-set_target_properties(cronkite-cli PROPERTIES OUTPUT_NAME cronkite)
-# install target for cronkite cli binary
-install(TARGETS cronkite-cli DESTINATION bin)

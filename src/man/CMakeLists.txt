@@ -5,8 +5,6 @@ if(NOT A2X)
     MESSAGE(WARNING "Unable to find 'a2x' from asciidoc. Skipping man build.")
 else(NOT A2X)
     a2x_build_manpage(manpage_depends
-        cronkite.1.txt cronkite.1 ${BUILD_VERSION})
-    a2x_build_manpage(manpage_depends
         libcronkite.3.txt libcronkite.3 ${BUILD_VERSION})
     file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/cronkite_get.3
         ".so man3/libcronkite.3\n")

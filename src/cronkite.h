@@ -34,5 +34,5 @@ typedef struct CKPackage {
     struct CKPackage *next;
 } CKPackage;
 
-CKPackage *cronkite_get(char t, char *term);
+CKPackage *cronkite_get(const char *urlfmt, const char t, const char *term);
 void cronkite_cleanup(CKPackage *ckresult);

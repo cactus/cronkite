@@ -1,9 +1,8 @@
 cmake_minimum_required(VERSION 2.6) 
-project(cronkite C)
-
-set(BUILD_VERSION "0.3.0")
-set(API_VERSION "0.3")
-set(PROJECT_VERSION ${BUILD_VERSION})
+project(cronkite-cli C)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+include_directories(/Users/elij/projects/tmp/cronkite_test/usr/local/include)
+link_directories(/Users/elij/projects/tmp/cronkite_test/usr/local/lib)
 
 if(APPLE)
     set(CMAKE_OSX_ARCHITECTURES ppc;i386;x86_64)
@@ -18,15 +17,26 @@ else(APPLE)
     set(CMAKE_C_FLAGS_MINSIZEREL "-std=c99 -Wall -mtune=generic -Os -pipe $ENV{CFLAGS}")
 endif(APPLE)
 
-
-set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/modules ${CMAKE_MODULE_PATH})
-include(MacroOutOfSourceBuild)
-macro_ensure_out_of_source_build("${PROJECT_NAME} requires an out tree build.")
-
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE MinSizeRel CACHE STRING
       "Choose the type: None Debug Release RelWithDebInfo MinSizeRel." FORCE)
 endif(NOT CMAKE_BUILD_TYPE)
 
-find_package(CURL)
-subdirs(src)
+set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/../..//cmake/modules ${CMAKE_MODULE_PATH})
+
+include(BuildManpage)
+find_program(A2X a2x)
+
+if(NOT A2X)
+    MESSAGE(WARNING "Unable to find 'a2x' from asciidoc. Skipping man build.")
+else(NOT A2X)
+    a2x_build_manpage(manpage_depends
+        cronkite.1.txt cronkite.1 ${BUILD_VERSION})
+endif(NOT A2X)
+
+# build cronkite cli binary
+add_executable(cronkite-cli cli.c)
+target_link_libraries(cronkite-cli cronkite)
+set_target_properties(cronkite-cli PROPERTIES OUTPUT_NAME cronkite)
+# install target for cronkite cli binary
+install(TARGETS cronkite-cli DESTINATION bin)

@@ -14,12 +14,14 @@
  * under the License.
 **/
 
+#define NAME "cronkite-cli"
+#define VERSION "1.0"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <cronkite.h>
-#include "config.h"
 
 static void print_pkgs(CKPackage *pkg);
 static void print_version();
@@ -27,18 +29,18 @@ static void print_help();
 static void cleanup();
 int main(int argc, char *argv[]);
 
-static void print_pkgs(CKPackage *pkg) {
+static void 
+print_pkgs(CKPackage *pkg) {
     char *delimiter;
     char *default_delimiter = "\t";
     int rsize = sizeof(pkg->values)/sizeof(char *);
-    int i=0;
 
     delimiter = getenv("CRONKITE_DELIMITER");
     if (delimiter == NULL) {
         delimiter = default_delimiter;
     }
 
-    for (i=0; i<rsize; i++) {
+    for (int i=0; i<rsize; i++) {
         if (i < (rsize - 1)) {
             printf("%s%s", pkg->values[i], delimiter);
         }
@@ -48,11 +50,13 @@ static void print_pkgs(CKPackage *pkg) {
     }
 }
 
-static void print_version() {
+static void 
+print_version() {
     fprintf(stderr, "%s-%s\n", NAME, VERSION);
 }
 
-static void print_help() {
+static void 
+print_help() {
     fprintf(stderr, "Usage: %s [OPTION] [OPTION-ARGUMENT]\n\n", NAME);
     fprintf(stderr, "Options:\n");
     fprintf(stderr, "\t-msearch <search-term>\n");
@@ -67,7 +71,8 @@ static void print_help() {
     fprintf(stderr, "\n");
 }
 
-static void cleanup() {
+static void 
+cleanup() {
     /* flush and close fds */
     fflush(NULL); /* flush all open streams */
     close(0);
@@ -75,7 +80,8 @@ static void cleanup() {
     close(2);
 }
 
-int main(int argc, char *argv[]) {
+int 
+main(int argc, char *argv[]) {
     CKPackage *results;
     char qtype='s';
 
@@ -103,7 +109,7 @@ int main(int argc, char *argv[]) {
         exit(1);
     }
 
-    results = cronkite_get(qtype, argv[2]);
+    results = cronkite_get("http://aur.archlinux.org/rpc.php?type=%s&arg=%s", qtype, argv[2]);
 
     if (results) {
         CKPackage *pkg = results;
