@@ -18,6 +18,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <errno.h>
 #include <cJSON.h>
 #include <curl/curl.h>
 #include <curl/types.h>
@@ -34,11 +35,16 @@ struct CKMemoryStruct {
 static void *myrealloc(void *ptr, size_t size);
 static size_t write_callback(void *ptr, size_t size, size_t nmemb, void *data);
 static int cronkite_request(const char *url, struct CKMemoryStruct *response);
-static cJSON *cronkite_ifetch(const char *urlfmt, const char *qtype, const char *term);
+static char *cronkite_ifetch(const char *qtype, const char *term);
 static char *cronkite_get_obj(cJSON *elem, char *name);
 static CKPackage *cronkite_pack_result(cJSON *result);
+static CKPackage *cronkite_json_to_packlist(char *jsondata);
 /* end local declarations */
 
+/* initialize some globals (dirty hacks! *cough*) */
+int ck_errno = CK_ERR_OK;
+char *default_urlfmt = DEFAULT_AUR_URL;
+/* end initialize */
 
 static void *
 myrealloc(void *ptr, size_t size) {
@@ -65,12 +71,14 @@ write_callback(void *ptr, size_t size, size_t nmemb, void *data) {
 
 static int 
 cronkite_request(const char *url, struct CKMemoryStruct *response) {
+    ck_errno = CK_ERR_OK;
     CURL *curl_handle;
     CURLcode status;
     long result_code;
 
     curl_handle = curl_easy_init();
     if (!curl_handle) {
+        ck_errno = CK_ERR_CURL_INIT;
         return 1;
     }
 
@@ -78,18 +86,23 @@ cronkite_request(const char *url, struct CKMemoryStruct *response) {
     curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, write_callback);
     curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, (void *)response);
     curl_easy_setopt(curl_handle, CURLOPT_USERAGENT, UAGENT);
-    curl_easy_setopt(curl_handle, CURLOPT_ENCODING, "gzip,deflate");
+    curl_easy_setopt(curl_handle, CURLOPT_ENCODING, "deflate, gzip");
 
     status = curl_easy_perform(curl_handle);
     if (status != 0) {
-        // fprintf(stderr, "error: unable to request data from %s\n", url);
-        // fprintf(stderr, " %s\n", curl_easy_strerror(status));
+        // add ck_curl_offset (+10) to curlcode for later parsing
+        ck_errno = CK_ERR_CURL_OFFSET + status;
         return 1;
     }
 
-    curl_easy_getinfo(curl_handle, CURLINFO_RESPONSE_CODE, &result_code);
+    status = curl_easy_getinfo(curl_handle, CURLINFO_RESPONSE_CODE, &result_code);
+    if (status != 0) {
+        // add ck_curl_offset (+10) to curlcode for later parsing
+        ck_errno = CK_ERR_CURL_OFFSET + status;
+        return 1;
+    }
     if (result_code != 200) {
-        // fprintf(stderr, "error: server responded with code %ld\n", result_code);
+        ck_errno = CK_ERR_RESP;
         return 1;
     }
 
@@ -97,12 +110,13 @@ cronkite_request(const char *url, struct CKMemoryStruct *response) {
     return 0;
 }
 
-static cJSON *
-cronkite_ifetch(const char *urlfmt, const char *qtype, const char *term) {
+static char *
+cronkite_ifetch(const char *qtype, const char *term) {
+    ck_errno = CK_ERR_OK;
     char *url;
-    cJSON *root;
     CURL *curl_handle;
     char *esc_term;
+    char *result;
     int reqlen = 0;
 
     struct CKMemoryStruct jdata;
@@ -112,30 +126,28 @@ cronkite_ifetch(const char *urlfmt, const char *qtype, const char *term) {
     curl_global_init(CURL_GLOBAL_NOTHING);
     curl_handle = curl_easy_init();
     esc_term = curl_easy_escape(curl_handle, term, 0);
-    reqlen = strlen(urlfmt) + strlen(qtype) + strlen(esc_term);
+    reqlen = strlen(default_urlfmt) + strlen(qtype) + strlen(esc_term);
     url = calloc(reqlen, sizeof(char));
     if (url == NULL) {
         // failed to allocate memory..just bail
+        ck_errno = CK_ERR_ALLOC;
         return NULL;
     }
-    snprintf(url, reqlen, urlfmt, qtype, esc_term);
+    snprintf(url, reqlen, default_urlfmt, qtype, esc_term);
     curl_free(esc_term);
     curl_easy_cleanup(curl_handle);
     curl_global_cleanup();
 
     if (0 != cronkite_request(url, &jdata)) {
+        // errno should be set by cronkite_request
         return NULL;
     }
-
-    root = cJSON_Parse(jdata.memory);
+    
+    result = calloc(jdata.size+1, sizeof(char));
+    int len = strlen(jdata.memory);
+    strncpy(result, jdata.memory, len);
     free(jdata.memory);
-
-    if (!root) {
-        // fprintf(stderr, "error parsing json data\n");
-        return NULL;
-    }
-
-    return root;
+    return result;
 }
 
 static char *
@@ -163,67 +175,38 @@ cronkite_get_obj(cJSON *elem, char *name) {
 }
 
 static CKPackage *
-cronkite_pack_result(cJSON *result) {
+cronkite_pack_result(cJSON *pkg_p) {
     CKPackage *pkg = (CKPackage *) calloc(1, sizeof(CKPackage));
-    pkg->values[CKPKG_ID] = cronkite_get_obj(result, "id");
-    pkg->values[CKPKG_URL] = cronkite_get_obj(result, "url");
-    pkg->values[CKPKG_NAME] = cronkite_get_obj(result, "name");
-    pkg->values[CKPKG_VERSION] = cronkite_get_obj(result, "version");
-    pkg->values[CKPKG_URLPATH] = cronkite_get_obj(result, "urlpath");
-    pkg->values[CKPKG_LICENSE] = cronkite_get_obj(result, "license");
-    pkg->values[CKPKG_NUMVOTES] = cronkite_get_obj(result, "numvotes");
-    pkg->values[CKPKG_OUTOFDATE] = cronkite_get_obj(result, "outofdate");
-    pkg->values[CKPKG_CATEGORYID] = cronkite_get_obj(result, "categoryid");
-    pkg->values[CKPKG_DESCRIPTION] = cronkite_get_obj(result, "description");
+    pkg->values[CKPKG_ID] = cronkite_get_obj(pkg_p, "id");
+    pkg->values[CKPKG_URL] = cronkite_get_obj(pkg_p, "url");
+    pkg->values[CKPKG_NAME] = cronkite_get_obj(pkg_p, "name");
+    pkg->values[CKPKG_VERSION] = cronkite_get_obj(pkg_p, "version");
+    pkg->values[CKPKG_URLPATH] = cronkite_get_obj(pkg_p, "urlpath");
+    pkg->values[CKPKG_LICENSE] = cronkite_get_obj(pkg_p, "license");
+    pkg->values[CKPKG_NUMVOTES] = cronkite_get_obj(pkg_p, "numvotes");
+    pkg->values[CKPKG_OUTOFDATE] = cronkite_get_obj(pkg_p, "outofdate");
+    pkg->values[CKPKG_CATEGORYID] = cronkite_get_obj(pkg_p, "categoryid");
+    pkg->values[CKPKG_DESCRIPTION] = cronkite_get_obj(pkg_p, "description");
     pkg->next = NULL;
     return pkg;
 }
 
-void 
-cronkite_cleanup(CKPackage *ckpackage) {
-    CKPackage *ckpkg = ckpackage;
-    CKPackage *next;
-    char *ptr;
-    while (ckpkg) {
-        for (int j=0; j<CKPKG_VAL_CNT; j++) {
-            ptr = ckpkg->values[j];
-            free(ptr);
-        }
-        next = ckpkg->next;
-        free(ckpkg);
-        ckpkg = next;
-    }
-}
-
-CKPackage *
-cronkite_get(const char *urlfmt, const char t, const char *term) {
-    char *qtype;
+static CKPackage *
+cronkite_json_to_packlist(char *jsondata) {
+    ck_errno = CK_ERR_OK;
     cJSON *root;
     cJSON *results;
     CKPackage *ckpkg = NULL;
     CKPackage *head = NULL;
-    int iter = 0;
 
-    switch (t) {
-        case 'i':
-            qtype = "info";
-            break;
-        case 's':
-            qtype = "search";
-            break;
-        case 'm':
-            qtype = "msearch";
-            break;
-        default:
-            qtype = "search";
-            break;
-    }
-
-    root = cronkite_ifetch(urlfmt, qtype, term);
+    root = cJSON_Parse(jsondata);
     if (!root) {
+        ck_errno = CK_ERR_PARSE;
         return NULL;
     }
+
     results = cJSON_GetObjectItem(root, "results");
+    int iter = 0;
     if (results->type == cJSON_Array) {
         cJSON *pkg = results->child;
         while (pkg) {
@@ -249,5 +232,106 @@ cronkite_get(const char *urlfmt, const char t, const char *term) {
     /* cJSON cleanup */
     cJSON_Delete(root);
     return head;
+}
+
+void 
+cronkite_cleanup(CKPackage *ckpackage) {
+    ck_errno = CK_ERR_OK;
+    CKPackage *ckpkg = ckpackage;
+    CKPackage *next;
+    char *ptr;
+    while (ckpkg) {
+        for (int j=0; j<CKPKG_VAL_CNT; j++) {
+            ptr = ckpkg->values[j];
+            free(ptr);
+        }
+        next = ckpkg->next;
+        free(ckpkg);
+        ckpkg = next;
+    }
+}
+
+CKPackage *
+cronkite_get(const char t, const char *term) {
+    ck_errno = CK_ERR_OK;
+    char *qtype;
+    CKPackage *pkg_list = NULL;
+    char *json;
+
+    switch (t) {
+        case 'i':
+            qtype = "info";
+            break;
+        case 's':
+            qtype = "search";
+            break;
+        case 'm':
+            qtype = "msearch";
+            break;
+        default:
+            qtype = "search";
+            break;
+    }
+
+    json = cronkite_ifetch(qtype, term);
+    if (!json) {
+        // ck_errno should be set by cronkite_ifetch
+        return NULL;
+    }
+
+    pkg_list = cronkite_json_to_packlist(json);
+    free(json);
+
+    if (!pkg_list) {
+        // ck_errno should be set by json_to_packlist
+        return NULL;
+    }
+
+    return pkg_list;
+}
+
+CKPackage *
+cronkite_json_conv(char *jsondata) {
+    ck_errno = CK_ERR_OK;
+    CKPackage *pkg_list = cronkite_json_to_packlist(jsondata);
+    
+    if (!pkg_list) {
+        // ck_err should be set by json_to_packlist
+        // fprintf(stderr, "error parsing json data\n");
+        return NULL;
+    }
+
+    return pkg_list;
+}
+
+const char *
+cronkite_strerror(int ck_err_val) {
+    if (ck_err_val < CK_ERR_CURL_OFFSET) {
+        switch (ck_err_val) {
+            case CK_ERR_CURL_INIT:
+                return "Error initializing CURL library calls.";
+            case CK_ERR_RESP:
+                return "Response code not 200 ok.";
+            case CK_ERR_ALLOC:
+                return "Failed to allocate memory.";
+            case CK_ERR_PARSE:
+                return "Error parsing JSON result.";
+            case CK_ERR_OK:
+                return "No error. Ok!";
+                break;
+            default:
+                return "No error string for that code.";
+                break;
+        }
+    }
+    else {
+        return curl_easy_strerror(ck_err_val - CK_ERR_CURL_OFFSET);
+    }
+    return "Hurrrrrrrr....."; //should never be reached
+}
+
+void
+cronkite_seturl(char *urlfmt) {
+    default_urlfmt = urlfmt;
 }
 

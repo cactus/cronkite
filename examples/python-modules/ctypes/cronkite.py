@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 ##
 ## Copyright 2009 elij
 ##
@@ -28,10 +29,15 @@ class CKPackage(Structure):
 CKPackage._fields_ = [("values", c_char_p * 10), ("next", POINTER(CKPackage))]
 
 _libcronkite = cdll.LoadLibrary(find_library("cronkite"))
-_libcronkite.cronkite_get.argtypes = [c_char_p, c_char, c_char_p]
+_libcronkite.cronkite_seturl.argtypes = [c_char_p]
+_libcronkite.cronkite_seturl.restype = c_void_p
+_libcronkite.cronkite_get.argtypes = [c_char, c_char_p]
 _libcronkite.cronkite_get.restype = POINTER(CKPackage)
 _libcronkite.cronkite_cleanup.argtypes = [POINTER(CKPackage)]
 _libcronkite.cronkite_cleanup.restype = c_void_p
+_libcronkite.cronkite_strerror.argtypes = [c_int]
+_libcronkite.cronkite_strerror.restype = c_char_p
+ck_errno = c_int.in_dll(_libcronkite, "ck_errno")
 
 def q_unpack(cpkg):
     return {"id":          cpkg.contents.values[0],
@@ -45,17 +51,25 @@ def q_unpack(cpkg):
             "categoryid":  cpkg.contents.values[8],
             "description": cpkg.contents.values[9]}
 
+def seturl(newurl):
+    _libcronkite.cronkite_seturl(newurl);
+
 def query(qtype, qstring):
     if not qtype == 's' and not qtype == 'i' and not qtype == 'm':
         raise exceptions.TypeError("argument 1 must be 'i', 's', or 'm'")
         return
     results = []
-    pkg = _libcronkite.cronkite_get(
-        "http://aur.archlinux.org/rpc.php?type=%s&arg=%s", qtype, qstring)
+    pkg = _libcronkite.cronkite_get(qtype, qstring)
     if bool(pkg) == False:
-        raise CronkiteException("Error communicating with server.")
-        return results
-    if pkg:
+        # save errno because cleanup resets it
+        err = ck_errno.value
+        # do some cleanup
+        _libcronkite.cronkite_cleanup(pkg)
+        # if err!=0, something broke
+        # otherwise just empty results -- no results found
+        if err != 0:
+            raise CronkiteException(_libcronkite.cronkite_strerror(err))
+    else:
         results.append(q_unpack(pkg))
         next = pkg.contents.next
         while next:

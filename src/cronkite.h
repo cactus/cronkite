@@ -15,6 +15,7 @@
 **/
 
 #define CKPKG_VAL_CNT 10
+#define DEFAULT_AUR_URL "http://aur.archlinux.org/rpc.php?type=%s&arg=%s"
 
 typedef enum CKPKG_VAL {
     CKPKG_ID = 0,
@@ -34,5 +35,19 @@ typedef struct CKPackage {
     struct CKPackage *next;
 } CKPackage;
 
-CKPackage *cronkite_get(const char *urlfmt, const char t, const char *term);
+typedef enum ck_errors {
+    CK_ERR_OK,
+    CK_ERR_PARSE,
+    CK_ERR_ALLOC,
+    CK_ERR_RESP,
+    CK_ERR_CURL_INIT,
+    CK_ERR_CURL_OFFSET
+} CK_ERRORS;
+
+extern int ck_errno;
+CKPackage *cronkite_get(const char t, const char *term);
+CKPackage *cronkite_json_conv(char *jsondata);
 void cronkite_cleanup(CKPackage *ckresult);
+const char *cronkite_strerror(int ck_err_val);
+void cronkite_seturl(char *urlfmt);
+

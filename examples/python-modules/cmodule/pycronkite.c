@@ -16,12 +16,26 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include <cronkite.h>
 #include <Python.h>
+#include <cronkite.h>
 
-static PyObject *cronkite(PyObject *self, PyObject *args);
+static PyObject *ck_query(PyObject *self, PyObject *args);
+static PyObject *ck_seturl(PyObject *self, PyObject *args);
+static PyObject *CronkiteError;
 
-static PyObject *cronkite(PyObject *self, PyObject *args) {
+static PyObject *ck_seturl(PyObject *self, PyObject *args){
+    char *urlfmt = NULL;
+
+    if (!PyArg_ParseTuple(args, "s", &urlfmt)) {
+        return NULL;
+    }
+    cronkite_seturl(urlfmt);
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+static PyObject *ck_query(PyObject *self, PyObject *args) {
+    ck_errno = CK_ERR_OK;
     char *qtype = NULL;
     char *qstring = NULL;
     CKPackage *results = NULL;
@@ -38,7 +52,20 @@ static PyObject *cronkite(PyObject *self, PyObject *args) {
     results = cronkite_get(qtype[0], qstring);
 
     if (!results) {
-        return NULL;
+        // get ck_error and raise exception with it
+        const int ckerr = ck_errno;
+        // fprintf(stderr, "%d", ckerr);
+        const char *errmsg = cronkite_strerror(ckerr);
+        // check to see if it a memory allocation error.
+        // if so, propagate that to python as required.
+        // otherwise just return a custom error
+        if (ckerr == CK_ERR_ALLOC) {
+            return PyErr_NoMemory();
+        }
+        else {
+            PyErr_SetString(CronkiteError, errmsg);
+            return NULL;
+        }
     }
 
     list = PyList_New(0);
@@ -63,13 +90,14 @@ static PyObject *cronkite(PyObject *self, PyObject *args) {
         pkg = pkg->next;
     }
     cronkite_cleanup(results);
-
     return list;
 }
 
 static PyMethodDef CRONKITE_METHODS[] = {
-    {"search", cronkite, METH_VARARGS, 
-     "search(qtype, qstring) -> list\n\nPerform a search on the aur."},
+    {"query", ck_query, METH_VARARGS, 
+        "query(qtype, qstring) -> list\n\nPerform a search on the aur."},
+    {"seturl", ck_seturl, METH_VARARGS,
+        "seturl(urlfmt) -> None\n\nSet query urlformat."}, 
     {NULL, NULL, 0, NULL} /* sentinel */
 };
 
@@ -81,5 +109,9 @@ PyMODINIT_FUNC initcronkite(void) {
 
     if (m == NULL)
         return;
+
+    CronkiteError = PyErr_NewException("cronkite.CronkiteException", NULL, NULL);
+    Py_INCREF(CronkiteError);
+    PyModule_AddObject(m, "CronkiteException", CronkiteError);
 }
 

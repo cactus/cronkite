@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <errno.h>
 #include <cronkite.h>
 
 static void print_pkgs(CKPackage *pkg);
@@ -89,11 +90,11 @@ main(int argc, char *argv[]) {
     /* handle command line arguments */
     if (argc == 2 && strcmp(argv[1],"-help") == 0) {
         print_help();
-        exit(0);
+        return 0;
     }
     else if (argc == 2 && strcmp(argv[1],"-version") == 0) {
         print_version();
-        exit(0);
+        return 0;
     }
     else if (argc == 3 && strcmp(argv[1],"-msearch") == 0) {
         qtype='m';
@@ -106,7 +107,7 @@ main(int argc, char *argv[]) {
     }
     else {
         print_help();
-        exit(1);
+        return 1;
     }
 
     results = cronkite_get("http://aur.archlinux.org/rpc.php?type=%s&arg=%s", qtype, argv[2]);
@@ -120,7 +121,16 @@ main(int argc, char *argv[]) {
     }
     else {
         /* no results or results not readable. Just exit. */
-        exit(2);
+        if (ck_errno == CK_ERR_OK) {
+            fprintf(stderr, "%s\n", "No results found.");
+            cronkite_cleanup(results);
+            return 2;
+        }
+        else {
+            fprintf(stderr, "%s\n", cronkite_strerror(ck_errno));
+            cronkite_cleanup(results);
+            return 1;
+        }
     }
 
     /* cleanup */
