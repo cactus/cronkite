@@ -13,9 +13,9 @@ if(APPLE)
 else(APPLE)
     set(CMAKE_SHARED_LINKER_FLAGS 
         "-Wl,--hash-style=gnu -Wl,--as-needed -Wl,--no-undefined $ENV{LDFLAGS}")
-    set(CMAKE_C_FLAGS_DEBUG "-g -Wall -Werror -std=c99 -pedantic $ENV{CFLAGS}")
-    set(CMAKE_C_FLAGS_RELEASE "-std=c99 -Wall -mtune=generic -O2 -pipe $ENV{CFLAGS}")
-    set(CMAKE_C_FLAGS_MINSIZEREL "-std=c99 -Wall -mtune=generic -Os -pipe $ENV{CFLAGS}")
+    set(CMAKE_C_FLAGS_DEBUG "-fpic -g -Wall -Werror -std=c99 -pedantic $ENV{CFLAGS}")
+    set(CMAKE_C_FLAGS_RELEASE "-fpic -std=c99 -Wall -mtune=generic -O2 -pipe $ENV{CFLAGS}")
+    set(CMAKE_C_FLAGS_MINSIZEREL "-fpic -std=c99 -Wall -mtune=generic -Os -pipe $ENV{CFLAGS}")
 endif(APPLE)
 
 
