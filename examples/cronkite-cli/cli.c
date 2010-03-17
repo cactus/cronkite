@@ -110,7 +110,8 @@ main(int argc, char *argv[]) {
         return 1;
     }
 
-    results = cronkite_get("http://aur.archlinux.org/rpc.php?type=%s&arg=%s", qtype, argv[2]);
+    cronkite_seturl("http://aur.archlinux.org/rpc.php?type=%s&arg=%s");
+    results = cronkite_get(qtype, argv[2]);
 
     if (results) {
         CKPackage *pkg = results;

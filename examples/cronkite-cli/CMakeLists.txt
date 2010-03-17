@@ -1,8 +1,6 @@
 cmake_minimum_required(VERSION 2.6) 
 project(cronkite-cli C)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-include_directories(/Users/elij/projects/tmp/cronkite_test/usr/local/include)
-link_directories(/Users/elij/projects/tmp/cronkite_test/usr/local/lib)
 
 if(APPLE)
     set(CMAKE_OSX_ARCHITECTURES ppc;i386;x86_64)
