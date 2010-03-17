@@ -12,11 +12,14 @@ Build requirements:
 - cmake
 - gcc
 - libcurl
+- cJSON_ (included in src tree already)
 - a2x / asciidoc (required to build manpages)
 
 Run requirements:
 
 - libcurl
+
+.. _cJSON: http://sourceforge.net/projects/cjson/
 
 
 Building
