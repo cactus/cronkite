@@ -18,7 +18,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <errno.h>
 #include <cJSON.h>
 #include <curl/curl.h>
 #include <curl/types.h>
@@ -139,7 +138,7 @@ cronkite_ifetch(const char *qtype, const char *term) {
     curl_global_cleanup();
 
     if (0 != cronkite_request(url, &jdata)) {
-        // errno should be set by cronkite_request
+        // ck_errno should be set by cronkite_request
         return NULL;
     }
     
