@@ -1,4 +1,6 @@
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
+find_package(CURL)
+include(${CURL_INCLUDE_DIRS})
 
 # process subdirs
 subdirs(cJSON)
@@ -9,9 +11,9 @@ configure_file(
     config.h @ONLY)
 
 # search for includes in here too
-include_directories(cJSON)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/cJSON)
 # search for libraries in here too
-link_directories(cJSON)
+link_directories(${CMAKE_CURRENT_BINARY_DIR}/cJSON)
 
 # build libcronkite
 add_library(cronkite SHARED cronkite.c)

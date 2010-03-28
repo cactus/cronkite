@@ -49,5 +49,5 @@ CKPackage *cronkite_get(const char t, const char *term);
 CKPackage *cronkite_json_conv(char *jsondata);
 void cronkite_cleanup(CKPackage *ckresult);
 const char *cronkite_strerror(int ck_err_val);
-void cronkite_seturl(char *urlfmt);
+void cronkite_seturl(const char *urlfmt);
 

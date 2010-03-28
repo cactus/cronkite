@@ -42,7 +42,7 @@ static CKPackage *cronkite_json_to_packlist(char *jsondata);
 
 /* initialize some globals (dirty hacks! *cough*) */
 int ck_errno = CK_ERR_OK;
-char *default_urlfmt = DEFAULT_AUR_URL;
+char *default_urlfmt = NULL;
 /* end initialize */
 
 static void *
@@ -75,6 +75,7 @@ cronkite_request(const char *url, struct CKMemoryStruct *response) {
     CURLcode status;
     long result_code;
 
+    curl_global_init(CURL_GLOBAL_NOTHING);
     curl_handle = curl_easy_init();
     if (!curl_handle) {
         ck_errno = CK_ERR_CURL_INIT;
@@ -126,6 +127,8 @@ cronkite_ifetch(const char *qtype, const char *term) {
     curl_handle = curl_easy_init();
     esc_term = curl_easy_escape(curl_handle, term, 0);
     reqlen = strlen(default_urlfmt) + strlen(qtype) + strlen(esc_term);
+    // since the placeholders in urlfmt exist, no need to pad the
+    // length for later snprintf
     url = calloc(reqlen, sizeof(char));
     if (url == NULL) {
         // failed to allocate memory..just bail
@@ -142,10 +145,12 @@ cronkite_ifetch(const char *qtype, const char *term) {
         return NULL;
     }
     
-    result = calloc(jdata.size+1, sizeof(char));
+    result = calloc(jdata.size + 1, sizeof(char));
     int len = strlen(jdata.memory);
     strncpy(result, jdata.memory, len);
+    /* cleanup */
     free(jdata.memory);
+    free(url);
     return result;
 }
 
@@ -248,6 +253,9 @@ cronkite_cleanup(CKPackage *ckpackage) {
         free(ckpkg);
         ckpkg = next;
     }
+    if (default_urlfmt != NULL) {
+        free(default_urlfmt);
+    }
 }
 
 CKPackage *
@@ -270,6 +278,11 @@ cronkite_get(const char t, const char *term) {
         default:
             qtype = "search";
             break;
+    }
+
+    if (default_urlfmt == NULL) {
+        default_urlfmt = calloc(strlen(DEFAULT_AUR_URL) + 1, sizeof(char));
+        strcpy(default_urlfmt, DEFAULT_AUR_URL);
     }
 
     json = cronkite_ifetch(qtype, term);
@@ -330,7 +343,8 @@ cronkite_strerror(int ck_err_val) {
 }
 
 void
-cronkite_seturl(char *urlfmt) {
-    default_urlfmt = urlfmt;
+cronkite_seturl(const char *urlfmt) {
+    default_urlfmt = calloc(strlen(urlfmt) + 1, sizeof(char));
+    strcpy(default_urlfmt, urlfmt);
 }
 

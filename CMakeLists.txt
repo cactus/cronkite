@@ -28,5 +28,20 @@ if(NOT CMAKE_BUILD_TYPE)
       "Choose the type: None Debug Release RelWithDebInfo MinSizeRel." FORCE)
 endif(NOT CMAKE_BUILD_TYPE)
 
-find_package(CURL)
 subdirs(src)
+
+option(BUILD_LUA_MODULE "Build lua module extension" OFF)
+if(BUILD_LUA_MODULE)
+    subdirs(examples/lua/)
+endif(BUILD_LUA_MODULE)
+
+option(BUILD_PYTHON_CMODULE "Build python cmodule style extension" OFF)
+if(BUILD_PYTHON_CMODULE)
+    subdirs(examples/python/cmodule/)
+endif(BUILD_PYTHON_CMODULE)
+
+option(BUILD_PYTHON_CTYPES "Build python ctypes style extension" OFF)
+if(BUILD_PYTHON_CTYPES)
+    subdirs(examples/python/cmodule/)
+endif(BUILD_PYTHON_CTYPES)
+
