@@ -13,6 +13,8 @@ Build requirements:
 - gcc
 - libcurl
 - a2x / asciidoc (required to build manpages)
+- lua (only required for building the lua extension)
+- python (only required for building the python-cmodule extension)
 
 Include 3rd party libraries:
 
@@ -21,6 +23,8 @@ Include 3rd party libraries:
 Run requirements:
 
 - libcurl
+- lua (lua extension only)
+- python (python extensions only)
 
 .. _cJSON: http://sourceforge.net/projects/cjson/
 
