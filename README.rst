@@ -40,6 +40,15 @@ There are a few build options, and their defaults, that you can specify:
   Specifies the build type for make based generators.
   Possible values: Debug, Release, RelWithDebInfo, MinSizeRel
 
+- **BUILD_LUA_MODULE** = ``OFF``
+
+  Build the lua module (luacronkite).
+
+- **BUILD_EXAMPLE_CLI** = ``OFF``
+
+  Build the example cli frontend (cronkite).
+
+
 The build steps are::
 
     $ mkdir build
