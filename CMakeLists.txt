@@ -28,7 +28,20 @@ if(NOT CMAKE_BUILD_TYPE)
       "Choose the type: None Debug Release RelWithDebInfo MinSizeRel." FORCE)
 endif(NOT CMAKE_BUILD_TYPE)
 
+find_program(A2X a2x)
+if(NOT A2X)
+    MESSAGE(WARNING "Unable to find 'a2x' from asciidoc. Skipping man builds.")
+else(NOT A2X)
+    include(BuildManpage)
+endif(NOT A2X)
+
+## subdir inclues / conditional includes
 subdirs(src)
+
+option(BUILD_EXAMPLE_CLI "Build example cronkite cli" OFF)
+if(BUILD_EXAMPLE_CLI)
+    subdirs(examples/cronkite-cli/)
+endif(BUILD_EXAMPLE_CLI)
 
 option(BUILD_LUA_MODULE "Build lua module extension" OFF)
 if(BUILD_LUA_MODULE)
