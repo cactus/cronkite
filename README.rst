@@ -42,7 +42,15 @@ There are a few build options, and their defaults, that you can specify:
 
 - **BUILD_LUA_MODULE** = ``OFF``
 
-  Build the lua module (luacronkite).
+  Build the lua module (luacronkite) extension.
+
+- **BUILD_PYTHON_CMODULE** = ``OFF``
+
+  Build python cmodule style extension (pycronkite.py).
+
+- **BUILD_PYTHON_CTYPES** = ``OFF``
+
+  Build python ctypes style extension (cronkite.so).
 
 - **BUILD_EXAMPLE_CLI** = ``OFF``
 
