@@ -1,8 +1,5 @@
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../src)
-link_directories(${CMAKE_CURRENT_BINARY_DIR}/../../src)
-
 find_package(PythonLibs)
 find_package(PythonInterp)
 

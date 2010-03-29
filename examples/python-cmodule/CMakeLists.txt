@@ -1,13 +1,10 @@
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../src)
-link_directories(${CMAKE_CURRENT_BINARY_DIR}/../../src)
-
 find_package(PythonLibs)
 find_package(PythonInterp)
 
-set(CK_INC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../src)
-set(CK_LIB_DIR ${CMAKE_CURRENT_BINARY_DIR}/../../../src)
+set(CK_INC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../src)
+set(CK_LIB_DIR ${CMAKE_CURRENT_BINARY_DIR}/../../src)
 
 configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/setup.py.in

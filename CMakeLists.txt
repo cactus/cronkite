@@ -50,11 +50,11 @@ endif(BUILD_LUA_MODULE)
 
 option(BUILD_PYTHON_CMODULE "Build python cmodule style extension" OFF)
 if(BUILD_PYTHON_CMODULE)
-    subdirs(examples/python/cmodule/)
+    subdirs(examples/python-cmodule/)
 endif(BUILD_PYTHON_CMODULE)
 
 option(BUILD_PYTHON_CTYPES "Build python ctypes style extension" OFF)
 if(BUILD_PYTHON_CTYPES)
-    subdirs(examples/python/ctypes/)
+    subdirs(examples/python-ctypes/)
 endif(BUILD_PYTHON_CTYPES)
 
