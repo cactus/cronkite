@@ -55,6 +55,6 @@ endif(BUILD_PYTHON_CMODULE)
 
 option(BUILD_PYTHON_CTYPES "Build python ctypes style extension" OFF)
 if(BUILD_PYTHON_CTYPES)
-    subdirs(examples/python/cmodule/)
+    subdirs(examples/python/ctypes/)
 endif(BUILD_PYTHON_CTYPES)
 
