@@ -1,8 +1,11 @@
 from distutils.core import setup, Extension
 cronkite = Extension(
     "cronkite",
+    include_dirs = ['@CK_INC_DIR@'],
+    library_dirs = ['@CK_LIB_DIR@'],
     libraries = ['cronkite'],
-    sources = ['pycronkite.c'])
+    sources = ['pycronkite.c'],
+    language = 'c')
 
 setup(
     name = 'Cronkite',
