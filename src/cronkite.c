@@ -51,7 +51,7 @@ myrealloc(void *ptr, size_t size) {
         return realloc(ptr, size);
     }
     else {
-        return calloc(1, size);
+        return malloc(size);
     }
 }
 
