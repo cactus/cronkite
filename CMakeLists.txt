@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 2.6) 
 project(cronkite C)
 
-set(BUILD_VERSION "0.3.0")
-set(API_VERSION "0.3")
+set(BUILD_VERSION "0.4.1")
+set(API_VERSION "0.4.0")
 set(PROJECT_VERSION ${BUILD_VERSION})
 
 if(APPLE)
