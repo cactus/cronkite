@@ -12,6 +12,7 @@ include_directories(${LUA_INCLUDE_DIR})
 
 # build cronkite cli binary
 add_library(luacronkite SHARED luacronkite.c)
+add_dependencies(luacronkite cronkite)
 target_link_libraries(luacronkite ${LUA_LIBRARIES} cronkite)
 set_target_properties(luacronkite PROPERTIES
     OUTPUT_NAME luacronkite PREFIX "" SUFFIX ".so")

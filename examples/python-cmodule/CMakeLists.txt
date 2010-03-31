@@ -17,7 +17,7 @@ configure_file(
 add_custom_command(
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/result/cronkite.so
     COMMAND ${PYTHON_EXECUTABLE} setup.py -q build --build-lib result
-    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/setup.py ${CMAKE_CURRENT_BINARY_DIR}/pycronkite.c
+    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/setup.py ${CMAKE_CURRENT_BINARY_DIR}/pycronkite.c cronkite
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
 add_custom_target(pycronkite-cmodule ALL
