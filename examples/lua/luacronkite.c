@@ -16,6 +16,7 @@
 
 #define LUA_LIB
 #define luacronkite_c
+#include <stdlib.h>
 #include <string.h>
 #include <lua.h>
 #include <lauxlib.h>
@@ -59,7 +60,7 @@ static int ck_seturl(lua_State *L) {
 }
 
 static int ck_query(lua_State *L) {
-    //ck_errno = CK_ERR_OK;
+    ck_errno = CK_ERR_OK;
     int n = lua_gettop(L);
     CKPackage *results = NULL;
     if (n != 2) {
@@ -85,39 +86,43 @@ static int ck_query(lua_State *L) {
     // lua tables start at 1
     int i = 1;
     lua_newtable(L);
-    int s_top = lua_gettop(L);
-    int t_top = 0;
+    int outer_top = lua_gettop(L);
+    int inner_top = 0;
+    // ensure stack is large enough for building inner table in loop
+    lua_checkstack(L, 30);
     while (pkg) {
-        lua_checkstack(L, 20);
         // push array index for parent table
         lua_pushinteger(L, i);
 
         // build new package table
         lua_newtable(L);
-        t_top = lua_gettop(L);
+        inner_top = lua_gettop(L);
+        lua_pushstring(L, "id");
         lua_pushstring(L, pkg->values[0]);
-        lua_setfield(L, t_top, "id");
+        lua_pushstring(L, "url");
         lua_pushstring(L, pkg->values[1]);
-        lua_setfield(L, t_top, "url");
+        lua_pushstring(L, "name");
         lua_pushstring(L, pkg->values[2]);
-        lua_setfield(L, t_top, "name");
+        lua_pushstring(L, "version");
         lua_pushstring(L, pkg->values[3]);
-        lua_setfield(L, t_top, "version");
+        lua_pushstring(L, "urlpath");
         lua_pushstring(L, pkg->values[4]);
-        lua_setfield(L, t_top, "urlpath");
+        lua_pushstring(L, "license");
         lua_pushstring(L, pkg->values[5]);
-        lua_setfield(L, t_top, "license");
+        lua_pushstring(L, "numvotes");
         lua_pushstring(L, pkg->values[6]);
-        lua_setfield(L, t_top, "numvotes");
+        lua_pushstring(L, "outofdate");
         lua_pushstring(L, pkg->values[7]);
-        lua_setfield(L, t_top, "outofdate");
+        lua_pushstring(L, "categoryid");
         lua_pushstring(L, pkg->values[8]);
-        lua_setfield(L, t_top, "categoryid");
+        lua_pushstring(L, "description");
         lua_pushstring(L, pkg->values[9]);
-        lua_setfield(L, t_top, "description");
-        // add this associative 'table' to the top
-        // level table
-        lua_settable(L, s_top);
+        // build inner table
+        for (int j=0; j<10; j++) {
+            lua_settable(L, inner_top);
+        }
+        // add inner table to the outer table
+        lua_settable(L, outer_top);
         i++;
         pkg = pkg->next;
     }
