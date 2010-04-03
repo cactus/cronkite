@@ -139,7 +139,8 @@ static const luaL_Reg ck_fcs[] = {
 };
 
 LUALIB_API int luaopen_luacronkite(lua_State *L) {
-    luaL_register(L, "luacronkite", ck_fcs);
+    lua_newtable(L);
+    luaL_register(L, NULL, ck_fcs);
     return 1;
 }
 
