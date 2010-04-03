@@ -210,22 +210,15 @@ cronkite_json_to_packlist(char *jsondata) {
     }
 
     results = cJSON_GetObjectItem(root, "results");
-    int iter = 0;
     if (results->type == cJSON_Array) {
         cJSON *pkg = results->child;
         while (pkg) {
             if (pkg->type == cJSON_Object) {
-                if (iter == 0) { /* means first iter */
-                    ckpkg = cronkite_pack_result(pkg);
-                    head = ckpkg;
-                }
-                else {
-                    ckpkg->next = cronkite_pack_result(pkg);
-                    ckpkg = ckpkg->next;
-                }
+                ckpkg = cronkite_pack_result(pkg);
+                ckpkg->next = head;
+                head = ckpkg;
             }
             pkg = pkg->next;
-            iter++;
         }
     }
     else if (results->type == cJSON_Object) {
@@ -242,8 +235,9 @@ void
 cronkite_cleanup(CKPackage *ckpackage) {
     ck_errno = CK_ERR_OK;
     CKPackage *ckpkg = ckpackage;
-    CKPackage *next;
-    char *ptr;
+    CKPackage *next = NULL;
+    char *ptr = NULL;
+
     while (ckpkg) {
         for (int j=0; j<CKPKG_VAL_CNT; j++) {
             ptr = ckpkg->values[j];
