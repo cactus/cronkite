@@ -51,6 +51,10 @@ The following environment variables affect the execution of *cronkite*:
     Specifies the delimiter/separator between the elements in the
     *OUTPUT FORMAT*. Defaults to `\t` if not set.
 
+'CRONKITE_AURURL'::
+    Specifies the destination url for queries. If not provided, the
+    default AUR URL is used.
+
 
 OUTPUT FORMAT
 -------------

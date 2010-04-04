@@ -110,7 +110,12 @@ main(int argc, char *argv[]) {
         return 1;
     }
 
-    cronkite_seturl("http://aur.archlinux.org/rpc.php?type=%s&arg=%s");
+    char *aur_url = getenv("CRONKITE_AURURL");
+    if (aur_url == NULL) {
+        aur_url = "http://aur.archlinux.org/rpc.php?type=%s&arg=%s";
+    }
+
+    cronkite_seturl(aur_url);
     results = cronkite_get(qtype, argv[2]);
 
     if (results) {
