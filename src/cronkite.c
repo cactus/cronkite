@@ -26,6 +26,8 @@
 #include "config.h"
 
 /* local declarations -- not exported */
+static char *g_urlfmt = NULL;
+
 struct CKMemoryStruct {
     char *memory;
     size_t size;
@@ -40,9 +42,8 @@ static CKPackage *cronkite_pack_result(cJSON *result);
 static CKPackage *cronkite_json_to_packlist(char *jsondata);
 /* end local declarations */
 
-/* initialize some globals (dirty hacks! *cough*) */
+/* initialize exported globals */
 int ck_errno = CK_ERR_OK;
-char *default_urlfmt = NULL;
 /* end initialize */
 
 static void *
@@ -50,9 +51,7 @@ myrealloc(void *ptr, size_t size) {
     if (ptr) {
         return realloc(ptr, size);
     }
-    else {
-        return malloc(size);
-    }
+    return malloc(size);
 }
 
 static size_t 
@@ -123,11 +122,17 @@ cronkite_ifetch(const char *qtype, const char *term) {
     jdata.memory = NULL;
     jdata.size = 0;
 
+    if (g_urlfmt && strcmp(g_urlfmt,CK_URL_TEST_STRING) == 0) {
+        char *test_return = calloc(strlen(CK_TEST_JSON) + 1, sizeof(char));
+        strcpy(test_return, CK_TEST_JSON);
+        return test_return;
+    }
+
     curl_global_init(CURL_GLOBAL_NOTHING);
     curl_handle = curl_easy_init();
     esc_term = curl_easy_escape(curl_handle, term, 0);
-    reqlen = strlen(default_urlfmt) + strlen(qtype) + strlen(esc_term);
-    // since the placeholders in urlfmt exist, no need to pad the
+    reqlen = strlen(g_urlfmt) + strlen(qtype) + strlen(esc_term);
+    // since the placeholders in g_urlfmt exist, no need to pad the
     // length for later snprintf
     url = calloc(reqlen, sizeof(char));
     if (url == NULL) {
@@ -135,7 +140,7 @@ cronkite_ifetch(const char *qtype, const char *term) {
         ck_errno = CK_ERR_ALLOC;
         return NULL;
     }
-    snprintf(url, reqlen, default_urlfmt, qtype, esc_term);
+    snprintf(url, reqlen, g_urlfmt, qtype, esc_term);
     curl_free(esc_term);
     curl_easy_cleanup(curl_handle);
     curl_global_cleanup();
@@ -161,19 +166,14 @@ cronkite_get_obj(cJSON *elem, char *name) {
     int len=0;
 
     element = cJSON_GetObjectItem(elem, name);
-    if (!element) {
-        rval = "NULL";
+    if (element && element->valuestring) {
+        len = strlen(element->valuestring);
+        rval = (char *)calloc(len+1, sizeof(char *));
+        strncpy(rval, element->valuestring, len);
+        rval[len] = '\0'; /* make sure it is null terminated */
     }
     else {
-        if (!element->valuestring) {
-            rval = "NULL";
-        }
-        else {
-            len = strlen(element->valuestring);
-            rval = (char *)calloc(len+1, sizeof(char *));
-            strncpy(rval, element->valuestring, len);
-            rval[len] = '\0'; /* make sure it is null terminated */
-        }
+        rval = "NULL";
     }
     return rval;
 }
@@ -225,6 +225,9 @@ cronkite_json_to_packlist(char *jsondata) {
         ckpkg = cronkite_pack_result(results);
         head = ckpkg;
     }
+    else {
+        head = NULL;
+    }
 
     /* cJSON cleanup */
     cJSON_Delete(root);
@@ -236,19 +239,19 @@ cronkite_cleanup(CKPackage *ckpackage) {
     ck_errno = CK_ERR_OK;
     CKPackage *ckpkg = ckpackage;
     CKPackage *next = NULL;
-    char *ptr = NULL;
 
     while (ckpkg) {
-        for (int j=0; j<CKPKG_VAL_CNT; j++) {
-            ptr = ckpkg->values[j];
-            free(ptr);
+        for (int i=0; i<CKPKG_VAL_LEN; i++) {
+            if (ckpkg->values[i]) {
+                free(ckpkg->values[i]);
+            }
         }
         next = ckpkg->next;
         free(ckpkg);
         ckpkg = next;
     }
-    if (default_urlfmt != NULL) {
-        free(default_urlfmt);
+    if (g_urlfmt != NULL) {
+        free(g_urlfmt);
     }
 }
 
@@ -274,9 +277,9 @@ cronkite_get(const char t, const char *term) {
             break;
     }
 
-    if (default_urlfmt == NULL) {
-        default_urlfmt = calloc(strlen(DEFAULT_AUR_URL) + 1, sizeof(char));
-        strcpy(default_urlfmt, DEFAULT_AUR_URL);
+    if (g_urlfmt == NULL) {
+        ck_errno = CK_ERR_URLUNSET;
+        return NULL;
     }
 
     json = cronkite_ifetch(qtype, term);
@@ -316,12 +319,19 @@ cronkite_strerror(int ck_err_val) {
         switch (ck_err_val) {
             case CK_ERR_CURL_INIT:
                 return "Error initializing CURL library calls.";
+                break;
             case CK_ERR_RESP:
                 return "Response code not 200 ok.";
+                break;
+            case CK_ERR_URLUNSET:
+                return "URL string is not set.";
+                break;
             case CK_ERR_ALLOC:
                 return "Failed to allocate memory.";
+                break;
             case CK_ERR_PARSE:
                 return "Error parsing JSON result.";
+                break;
             case CK_ERR_OK:
                 return "No error. Ok!";
                 break;
@@ -338,7 +348,7 @@ cronkite_strerror(int ck_err_val) {
 
 void
 cronkite_seturl(const char *urlfmt) {
-    default_urlfmt = calloc(strlen(urlfmt) + 1, sizeof(char));
-    strcpy(default_urlfmt, urlfmt);
+    g_urlfmt = calloc(strlen(urlfmt) + 1, sizeof(char));
+    strcpy(g_urlfmt, urlfmt);
 }
 

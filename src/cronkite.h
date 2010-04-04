@@ -14,8 +14,10 @@
  * under the License.
 **/
 
-#define CKPKG_VAL_CNT 10
-#define DEFAULT_AUR_URL "http://aur.archlinux.org/rpc.php?type=%s&arg=%s"
+/* see http://www.rfc-editor.org/rfc/rfc2606.txt for the reasoning behind
+   the name choice */
+#define CK_URL_TEST_STRING "http://aur.test"
+#define CKPKG_VAL_LEN 10
 
 typedef enum CKPKG_VAL {
     CKPKG_ID = 0,
@@ -31,7 +33,7 @@ typedef enum CKPKG_VAL {
 } CKPKG_VAL;
 
 typedef struct CKPackage {
-    char *values[CKPKG_VAL_CNT];
+    char *values[CKPKG_VAL_LEN];
     struct CKPackage *next;
 } CKPackage;
 
@@ -39,6 +41,7 @@ typedef enum ck_errors {
     CK_ERR_OK,
     CK_ERR_PARSE,
     CK_ERR_ALLOC,
+    CK_ERR_URLUNSET,
     CK_ERR_RESP,
     CK_ERR_CURL_INIT,
     CK_ERR_CURL_OFFSET
