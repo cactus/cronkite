@@ -1,28 +1,28 @@
 // this is an asciidoc formatted man page
-:man manual: cronkite manual
-:man source: cronkite
+:man manual: cronkite-cli manual
+:man source: cronkite-cli
 :man version: {revnumber}
 
-cronkite(1)
-===========
+cronkite-cli(1)
+===============
 
 NAME
 ----
-cronkite - aurjson helper utility
+cronkite-cli - aurjson helper utility
 
 
 SYNOPSIS
 --------
-*cronkite* ['OPTIONS'] ['OPTION-ARGUMENTS']
+*cronkite-cli* ['OPTIONS'] ['OPTION-ARGUMENTS']
 
 
 DESCRIPTION
 -----------
-The cronkite(1) command is a helper utility, for those writing AUR command line
-utilities. The goal is to ease the usage of the aurjson interface, by providing
-a pre-parsed output for more friendly grep'ing and sed'ing.
+The cronkite-cli(1) command is a helper utility, for those writing AUR command
+line utilities. The goal is to ease the usage of the aurjson interface, by
+providing a pre-parsed output for more friendly grep'ing and sed'ing.
 
-cronkite is powered by libcronkite. See libcronkite(3) for more details.
+cronkite-cli is powered by libcronkite. See libcronkite(3) for more details.
 
 
 OPTIONS
@@ -45,7 +45,7 @@ OPTIONS
 
 ENVIRONMENT
 -----------
-The following environment variables affect the execution of *cronkite*:
+The following environment variables affect the execution of *cronkite-cli*:
 
 'CRONKITE_DELIMITER'::
     Specifies the delimiter/separator between the elements in the

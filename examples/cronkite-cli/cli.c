@@ -14,15 +14,13 @@
  * under the License.
 **/
 
-#define NAME "cronkite-cli"
-#define VERSION "0.3.0"
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <errno.h>
 #include <cronkite.h>
+#include "cli.h"
 
 static void print_pkgs(CKPackage *pkg);
 static void print_version();
@@ -53,7 +51,7 @@ print_pkgs(CKPackage *pkg) {
 
 static void 
 print_version() {
-    fprintf(stderr, "%s-%s\n", NAME, VERSION);
+    fprintf(stderr, "%s %s\n", NAME, VERSION);
 }
 
 static void 
