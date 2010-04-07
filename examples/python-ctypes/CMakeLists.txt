@@ -2,6 +2,9 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 find_package(PythonLibs)
 find_package(PythonInterp)
+if(NOT (PYTHONLIBS_FOUND AND PYTHONINTERP_FOUND))
+    MESSAGE(FATAL_ERROR "Python required to build cmodule")
+endif(NOT (PYTHONLIBS_FOUND AND PYTHONINTERP_FOUND))
 
 configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/setup.py

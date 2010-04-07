@@ -8,8 +8,11 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../src)
 link_directories(${CMAKE_CURRENT_BINARY_DIR}/../../src)
 
 find_package(Lua51)
-include_directories(${LUA_INCLUDE_DIR})
+if(NOT LUA51_FOUND)
+    MESSAGE(FATAL_ERROR "Lua not found. It is required to build lua module.")
+endif(NOT LUA51_FOUND)
 
+include_directories(${LUA_INCLUDE_DIR})
 # build cronkite cli binary
 add_library(luacronkite SHARED luacronkite.c)
 add_dependencies(luacronkite cronkite)
