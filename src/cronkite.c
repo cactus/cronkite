@@ -78,6 +78,7 @@ cronkite_request(const char *url, struct CKMemoryStruct *response) {
     curl_handle = curl_easy_init();
     if (!curl_handle) {
         ck_errno = CK_ERR_CURL_INIT;
+        curl_global_cleanup();
         return 1;
     }
 
@@ -91,6 +92,8 @@ cronkite_request(const char *url, struct CKMemoryStruct *response) {
     if (status != 0) {
         // add ck_curl_offset (+10) to curlcode for later parsing
         ck_errno = CK_ERR_CURL_OFFSET + status;
+        curl_easy_cleanup(curl_handle);
+        curl_global_cleanup();
         return 1;
     }
 
@@ -98,14 +101,19 @@ cronkite_request(const char *url, struct CKMemoryStruct *response) {
     if (status != 0) {
         // add ck_curl_offset (+10) to curlcode for later parsing
         ck_errno = CK_ERR_CURL_OFFSET + status;
+        curl_easy_cleanup(curl_handle);
+        curl_global_cleanup();
         return 1;
     }
     if (result_code != 200) {
         ck_errno = CK_ERR_RESP;
+        curl_easy_cleanup(curl_handle);
+        curl_global_cleanup();
         return 1;
     }
 
     curl_easy_cleanup(curl_handle);
+    curl_global_cleanup();
     return 0;
 }
 
@@ -138,6 +146,8 @@ cronkite_ifetch(const char *qtype, const char *term) {
     if (url == NULL) {
         // failed to allocate memory..just bail
         ck_errno = CK_ERR_ALLOC;
+        curl_easy_cleanup(curl_handle);
+        curl_global_cleanup();
         return NULL;
     }
     snprintf(url, reqlen, g_urlfmt, qtype, esc_term);
