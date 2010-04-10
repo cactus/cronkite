@@ -7,7 +7,7 @@ if(NOT (PYTHONLIBS_FOUND AND PYTHONINTERP_FOUND))
 endif(NOT (PYTHONLIBS_FOUND AND PYTHONINTERP_FOUND))
 
 configure_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/setup.py
+    ${CMAKE_CURRENT_SOURCE_DIR}/setup.py.in
     ${CMAKE_CURRENT_BINARY_DIR}/setup.py @only)
 configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/pycronkite.py
