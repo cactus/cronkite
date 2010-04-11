@@ -20,6 +20,7 @@ endif(APPLE)
 
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/modules ${CMAKE_MODULE_PATH})
 include(MacroOutOfSourceBuild)
+include(NoseTests)
 macro_ensure_out_of_source_build("${PROJECT_NAME} requires an out tree build.")
 
 ## set a default build type
@@ -37,17 +38,7 @@ else(NOT A2X)
 endif(NOT A2X)
 
 ## setup testing harness stuffs
-find_package(PythonInterp)
-if(NOT PYTHONINTERP_FOUND)
-    MESSAGE(WARNING "Python required to run tests")
-else(NOT PYTHONINTERP_FOUND)
-    find_package(PyNose)
-    if(NOT PYNOSE_FOUND)
-        MESSAGE(WARNING "Python nose required to run tests")
-    else(NOT PYNOSE_FOUND)
-        add_custom_target(tests COMMENT "Run all tests target")
-    endif(NOT PYNOSE_FOUND)
-endif(NOT PYTHONINTERP_FOUND)
+nose_tests_init()
 
 ## subdir inclues / conditional includes
 subdirs(src)
