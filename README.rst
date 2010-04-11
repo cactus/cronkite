@@ -12,9 +12,13 @@ Build requirements:
 - cmake
 - gcc
 - libcurl
+
+Optional build requirements:
+
 - a2x / asciidoc (required to build manpages)
-- lua (only required for building the lua extension)
-- python (only required for building the python-cmodule extension)
+- lua (required for building the lua extension)
+- python (required for building python extensions, and running tests)
+- python-nose (required to run tests)
 
 Include 3rd party libraries:
 

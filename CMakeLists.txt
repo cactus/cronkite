@@ -18,22 +18,27 @@ else(APPLE)
     set(CMAKE_C_FLAGS_MINSIZEREL "-fpic -std=c99 -Wall -mtune=generic -Os -pipe $ENV{CFLAGS}")
 endif(APPLE)
 
-
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/modules ${CMAKE_MODULE_PATH})
 include(MacroOutOfSourceBuild)
+include(NoseTests)
 macro_ensure_out_of_source_build("${PROJECT_NAME} requires an out tree build.")
 
+## set a default build type
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE MinSizeRel CACHE STRING
       "Choose the type: None Debug Release RelWithDebInfo MinSizeRel." FORCE)
 endif(NOT CMAKE_BUILD_TYPE)
 
+## find out if we can build manpages
 find_program(A2X a2x)
 if(NOT A2X)
     MESSAGE(WARNING "Unable to find 'a2x' from asciidoc. Skipping man builds.")
 else(NOT A2X)
     include(BuildManpage)
 endif(NOT A2X)
+
+## setup testing harness stuffs
+nose_tests_init()
 
 ## subdir inclues / conditional includes
 subdirs(src)
@@ -57,4 +62,3 @@ option(BUILD_PYTHON_CTYPES "Build python ctypes style extension" OFF)
 if(BUILD_PYTHON_CTYPES)
     subdirs(examples/python-ctypes/)
 endif(BUILD_PYTHON_CTYPES)
-
