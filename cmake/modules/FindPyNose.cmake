@@ -1,0 +1,10 @@
+# Locate Python Nose
+# This module defines
+#  PYNOSE_FOUND
+#  PYNOSE_EXECUTABLE - path to nosetests
+
+find_program(PYNOSE_EXECUTABLE NAMES nosetests)
+    
+INCLUDE(FindPackageHandleStandardArgs)
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(PyNose DEFAULT_MSG PYNOSE_EXECUTABLE)
+MARK_AS_ADVANCED(PYNOSE_EXECUTABLE)

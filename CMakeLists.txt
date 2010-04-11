@@ -18,22 +18,36 @@ else(APPLE)
     set(CMAKE_C_FLAGS_MINSIZEREL "-fpic -std=c99 -Wall -mtune=generic -Os -pipe $ENV{CFLAGS}")
 endif(APPLE)
 
-
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/modules ${CMAKE_MODULE_PATH})
 include(MacroOutOfSourceBuild)
 macro_ensure_out_of_source_build("${PROJECT_NAME} requires an out tree build.")
 
+## set a default build type
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE MinSizeRel CACHE STRING
       "Choose the type: None Debug Release RelWithDebInfo MinSizeRel." FORCE)
 endif(NOT CMAKE_BUILD_TYPE)
 
+## find out if we can build manpages
 find_program(A2X a2x)
 if(NOT A2X)
     MESSAGE(WARNING "Unable to find 'a2x' from asciidoc. Skipping man builds.")
 else(NOT A2X)
     include(BuildManpage)
 endif(NOT A2X)
+
+## setup testing harness stuffs
+find_package(PythonInterp)
+if(NOT PYTHONINTERP_FOUND)
+    MESSAGE(WARNING "Python required to run tests")
+else(NOT PYTHONINTERP_FOUND)
+    find_package(PyNose)
+    if(NOT PYNOSE_FOUND)
+        MESSAGE(WARNING "Python nose required to run tests")
+    else(NOT PYNOSE_FOUND)
+        add_custom_target(tests COMMENT "Run all tests target")
+    endif(NOT PYNOSE_FOUND)
+endif(NOT PYTHONINTERP_FOUND)
 
 ## subdir inclues / conditional includes
 subdirs(src)
@@ -57,4 +71,3 @@ option(BUILD_PYTHON_CTYPES "Build python ctypes style extension" OFF)
 if(BUILD_PYTHON_CTYPES)
     subdirs(examples/python-ctypes/)
 endif(BUILD_PYTHON_CTYPES)
-
