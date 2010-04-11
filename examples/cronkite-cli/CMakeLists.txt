@@ -19,3 +19,8 @@ target_link_libraries(cronkite-cli cronkite)
 set_target_properties(cronkite-cli PROPERTIES OUTPUT_NAME cronkite-cli)
 # install target for cronkite cli binary
 install(TARGETS cronkite-cli DESTINATION bin)
+
+nose_add_test(cli-tests 
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests.py 
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+
