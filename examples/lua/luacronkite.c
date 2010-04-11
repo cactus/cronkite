@@ -130,8 +130,8 @@ static int ck_query(lua_State *L) {
     cronkite_cleanup(results);
     return 1;
 }
-    
-static const luaL_Reg ck_fcs[] = {
+
+static const struct luaL_Reg ck_fcs[] = {
     {"seturl", ck_seturl},
     {"query", ck_query},
     {"test", ck_test},
