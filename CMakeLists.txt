@@ -26,7 +26,18 @@ include(MacroOutOfSourceBuild)
 macro_ensure_out_of_source_build("${PROJECT_NAME} requires an out tree build.")
 
 ## setup testing harness stuffs
-include(CustomTests)
+enable_testing()
+find_package(Valgrind QUIET)
+if(NOT VALGRIND_FOUND)
+    MESSAGE("!! Valgrind required to run memchecks. Memchecks will not be available.")
+else(NOT VALGRIND_FOUND)
+    set(VG_WRAP ${CMAKE_SOURCE_DIR}/cmake/helpers/vg-wrap.sh)
+endif(NOT VALGRIND_FOUND)
+
+find_package(PyNose QUIET)
+if(NOT PYNOSE_FOUND)
+    MESSAGE("!! Python-nose required to run tests. Tests will not be available.")
+endif(NOT PYNOSE_FOUND)
 
 ## set a default build type
 if(NOT CMAKE_BUILD_TYPE)
