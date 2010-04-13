@@ -11,7 +11,7 @@ if(A2X)
         ${CMAKE_CURRENT_BINARY_DIR}/cronkite_cleanup.3
         DESTINATION "share/man/man3"
         PERMISSIONS OWNER_READ GROUP_READ WORLD_READ)
-    add_custom_target(manpage ALL
+    add_custom_target(cronkite-man ALL
         DEPENDS ${manpage_depends}
             ${CMAKE_CURRENT_BINARY_DIR}/cronkite_get.3
             ${CMAKE_CURRENT_BINARY_DIR}/cronkite_cleanup.3)
