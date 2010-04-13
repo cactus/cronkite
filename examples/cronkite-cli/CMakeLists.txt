@@ -6,7 +6,7 @@ link_directories(${CMAKE_CURRENT_BINARY_DIR}/../../src)
 if(A2X)
     a2x_build_manpage(cli-manpage_depends 
         cronkite-cli.1.txt cronkite-cli.1 ${BUILD_VERSION})
-    add_custom_target(cli-manpage ALL DEPENDS ${cli-manpage_depends})
+    add_custom_target(cronkite-cli-man ALL DEPENDS ${cli-manpage_depends})
 endif(A2X)
 
 configure_file(
