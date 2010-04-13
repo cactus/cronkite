@@ -18,10 +18,16 @@ else(APPLE)
     set(CMAKE_C_FLAGS_MINSIZEREL "-fpic -std=c99 -Wall -mtune=generic -Os -pipe $ENV{CFLAGS}")
 endif(APPLE)
 
+## set module include path
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/modules ${CMAKE_MODULE_PATH})
+
+## ensure out of tree build
 include(MacroOutOfSourceBuild)
-include(NoseTests)
 macro_ensure_out_of_source_build("${PROJECT_NAME} requires an out tree build.")
+
+## setup testing harness stuffs
+include(NoseTests)
+nose_tests_init()
 
 ## set a default build type
 if(NOT CMAKE_BUILD_TYPE)
@@ -32,33 +38,33 @@ endif(NOT CMAKE_BUILD_TYPE)
 ## find out if we can build manpages
 find_program(A2X a2x)
 if(NOT A2X)
-    MESSAGE(WARNING "Unable to find 'a2x' from asciidoc. Skipping man builds.")
+    MESSAGE(WARNING 
+        "Unable to find 'a2x' from asciidoc. Skipping manpage generation.")
 else(NOT A2X)
     include(BuildManpage)
 endif(NOT A2X)
 
-## setup testing harness stuffs
-nose_tests_init()
-
 ## subdir inclues / conditional includes
 subdirs(src)
 
+option(BUILD_ALL "Build all modules and examples" ON)
+
 option(BUILD_EXAMPLE_CLI "Build example cronkite cli" OFF)
-if(BUILD_EXAMPLE_CLI)
+if(BUILD_ALL OR BUILD_EXAMPLE_CLI)
     subdirs(examples/cronkite-cli/)
-endif(BUILD_EXAMPLE_CLI)
+endif(BUILD_ALL OR BUILD_EXAMPLE_CLI)
 
 option(BUILD_LUA_MODULE "Build lua module extension" OFF)
-if(BUILD_LUA_MODULE)
+if(BUILD_ALL OR BUILD_LUA_MODULE)
     subdirs(examples/lua/)
-endif(BUILD_LUA_MODULE)
+endif(BUILD_ALL OR BUILD_LUA_MODULE)
 
 option(BUILD_PYTHON_CMODULE "Build python cmodule style extension" OFF)
-if(BUILD_PYTHON_CMODULE)
+if(BUILD_ALL OR BUILD_PYTHON_CMODULE)
     subdirs(examples/python-cmodule/)
-endif(BUILD_PYTHON_CMODULE)
+endif(BUILD_ALL OR BUILD_PYTHON_CMODULE)
 
 option(BUILD_PYTHON_CTYPES "Build python ctypes style extension" OFF)
-if(BUILD_PYTHON_CTYPES)
+if(BUILD_ALL OR BUILD_PYTHON_CTYPES)
     subdirs(examples/python-ctypes/)
-endif(BUILD_PYTHON_CTYPES)
+endif(BUILD_ALL OR BUILD_PYTHON_CTYPES)

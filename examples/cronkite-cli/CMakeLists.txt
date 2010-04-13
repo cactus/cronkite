@@ -23,4 +23,3 @@ install(TARGETS cronkite-cli DESTINATION bin)
 nose_add_test(cli-tests 
     ${CMAKE_CURRENT_SOURCE_DIR}/tests.py 
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
-
