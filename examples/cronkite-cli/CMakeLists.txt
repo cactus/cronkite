@@ -20,6 +20,15 @@ set_target_properties(cronkite-cli PROPERTIES OUTPUT_NAME cronkite-cli)
 # install target for cronkite cli binary
 install(TARGETS cronkite-cli DESTINATION bin)
 
-nose_add_test(cli-tests 
-    ${CMAKE_CURRENT_SOURCE_DIR}/tests.py 
-    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+add_test_nose(test-cronkite-cli NOSEDIR ${CMAKE_CURRENT_SOURCE_DIR}/tests/)
+
+#if(PYNOSE_FOUND)
+#    add_test(NAME cli-tests-nose 
+#        COMMAND ${PYNOSE_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/tests.py)
+#endif(PYNOSE_FOUND)
+
+if(VALGRIND_FOUND)
+    add_test_valgrind(memcheck-cronkite-cli
+        COMMAND ${CMAKE_CURRENT_BINARY_DIR}/cronkite-cli -search example)
+endif(VALGRIND_FOUND)
+

@@ -26,8 +26,7 @@ include(MacroOutOfSourceBuild)
 macro_ensure_out_of_source_build("${PROJECT_NAME} requires an out tree build.")
 
 ## setup testing harness stuffs
-include(NoseTests)
-nose_tests_init()
+include(CustomTests)
 
 ## set a default build type
 if(NOT CMAKE_BUILD_TYPE)
@@ -38,8 +37,7 @@ endif(NOT CMAKE_BUILD_TYPE)
 ## find out if we can build manpages
 find_program(A2X a2x)
 if(NOT A2X)
-    MESSAGE(WARNING 
-        "Unable to find 'a2x' from asciidoc. Skipping manpage generation.")
+    MESSAGE("!! a2x not found. Manpage generation will not be available.")
 else(NOT A2X)
     include(BuildManpage)
 endif(NOT A2X)
