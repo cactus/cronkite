@@ -6,5 +6,5 @@ setup(
     description = 'python module for libcronkite',
     url = 'http://github.com/cactus/cronkite',
     license="http://www.apache.org/licenses/LICENSE-2.0",
-    py_modules = ['pycronkite'])
+    py_modules = ['cronkite'])
 

@@ -10,22 +10,22 @@ configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/setup.py.in
     ${CMAKE_CURRENT_BINARY_DIR}/setup.py @only)
 configure_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/pycronkite.py
-    ${CMAKE_CURRENT_BINARY_DIR}/pycronkite.py
+    ${CMAKE_CURRENT_SOURCE_DIR}/cronkite.py
+    ${CMAKE_CURRENT_BINARY_DIR}/cronkite.py
     COPYONLY)
 
 add_custom_command(
-    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/result/pycronkite.py
+    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/result/cronkite.py
     COMMAND ${PYTHON_EXECUTABLE} setup.py -q build_py --build-lib result
-    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/setup.py ${CMAKE_CURRENT_BINARY_DIR}/pycronkite.py
+    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/setup.py ${CMAKE_CURRENT_BINARY_DIR}/cronkite.py
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
 add_custom_target(pycronkite-ctypes ALL
-    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/result/pycronkite.py)
+    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/result/cronkite.py)
 
 ## add tests
-add_test(NAME t-pycronkite-nose
-    COMMAND ${PYNOSE_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/tests.py)
-set_tests_properties(t-pycronkite-nose PROPERTIES
+add_test(NAME t-pycronkite-ctypes-nose
+    COMMAND ${PYNOSE_EXECUTABLE} ${CMAKE_SOURCE_DIR}/examples/python-tests/tests.py)
+set_tests_properties(t-pycronkite-ctypes-nose PROPERTIES
     ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}/../../src/;DYLD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}/../../src/")
 
