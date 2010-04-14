@@ -62,8 +62,11 @@ There are a few build options, and their defaults, that you can specify:
 
 - **BUILD_EXAMPLE_CLI** = ``OFF``
 
-  Build the example cli frontend (cronkite).
+  Build the example cli frontend (cronkite-cli).
 
+- **BUILD_ALL** = ``OFF``
+
+  Build everything -- all modules and frontends.
 
 The build steps are::
 
