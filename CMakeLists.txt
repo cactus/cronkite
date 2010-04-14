@@ -54,7 +54,7 @@ endif(NOT A2X)
 ## subdir inclues / conditional includes
 subdirs(src)
 
-option(BUILD_ALL "Build all modules and examples" ON)
+option(BUILD_ALL "Build all modules and examples" OFF)
 
 option(BUILD_EXAMPLE_CLI "Build example cronkite cli" OFF)
 if(BUILD_ALL OR BUILD_EXAMPLE_CLI)
