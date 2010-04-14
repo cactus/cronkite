@@ -35,7 +35,6 @@ else(NOT VALGRIND_FOUND)
         --tool=memcheck --leak-check=yes 
         --show-reachable=yes --num-callers=30
         --leak-check=summary --leak-resolution=high)
-    set(VG_WRAP ${CMAKE_SOURCE_DIR}/cmake/helpers/vg-wrap.sh)
 endif(NOT VALGRIND_FOUND)
 
 find_package(PyNose QUIET)
