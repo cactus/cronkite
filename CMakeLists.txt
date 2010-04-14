@@ -37,11 +37,6 @@ else(NOT VALGRIND_FOUND)
         --leak-check=summary --leak-resolution=high)
 endif(NOT VALGRIND_FOUND)
 
-find_package(PyNose QUIET)
-if(NOT PYNOSE_FOUND)
-    MESSAGE("!! Python-nose required to run tests. Tests will not be available.")
-endif(NOT PYNOSE_FOUND)
-
 ## set a default build type
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE MinSizeRel CACHE STRING
@@ -73,10 +68,21 @@ endif(BUILD_ALL OR BUILD_LUA_MODULE)
 
 option(BUILD_PYTHON_CMODULE "Build python cmodule style extension" OFF)
 if(BUILD_ALL OR BUILD_PYTHON_CMODULE)
+    find_package(PyNose QUIET)
+    if(NOT PYNOSE_FOUND)
+        set(NONOSE TRUE)
+        MESSAGE("!! Python-nose required to run python module tests.")
+    endif(NOT PYNOSE_FOUND)
     subdirs(examples/python-cmodule/)
 endif(BUILD_ALL OR BUILD_PYTHON_CMODULE)
 
 option(BUILD_PYTHON_CTYPES "Build python ctypes style extension" OFF)
 if(BUILD_ALL OR BUILD_PYTHON_CTYPES)
+    if(NOT NONOSE AND NOT PYNOSE_FOUND)
+        find_package(PyNose QUIET)
+        if(NOT PYNOSE_FOUND)
+            MESSAGE("!! Python-nose required to run python module tests.")
+        endif(NOT PYNOSE_FOUND)
+    endif(NOT NONOSE AND NOT PYNOSE_FOUND)
     subdirs(examples/python-ctypes/)
 endif(BUILD_ALL OR BUILD_PYTHON_CTYPES)

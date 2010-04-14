@@ -17,8 +17,8 @@ Optional build requirements:
 
 - a2x / asciidoc (required to build manpages)
 - lua (required for building the lua extension)
-- python (required for building python extensions, and running tests)
-- python-nose (required to run tests)
+- python (required for building python extensions)
+- python-nose (required to run python extension tests)
 
 Include 3rd party libraries:
 
