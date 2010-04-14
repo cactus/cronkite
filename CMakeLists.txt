@@ -31,6 +31,10 @@ find_package(Valgrind QUIET)
 if(NOT VALGRIND_FOUND)
     MESSAGE("!! Valgrind required to run memchecks. Memchecks will not be available.")
 else(NOT VALGRIND_FOUND)
+    set(VALGRIND_OPTIONS
+        --tool=memcheck --leak-check=yes 
+        --show-reachable=yes --num-callers=30
+        --leak-check=summary --leak-resolution=high)
     set(VG_WRAP ${CMAKE_SOURCE_DIR}/cmake/helpers/vg-wrap.sh)
 endif(NOT VALGRIND_FOUND)
 

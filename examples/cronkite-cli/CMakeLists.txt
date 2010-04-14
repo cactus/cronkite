@@ -27,6 +27,8 @@ endif(PYNOSE_FOUND)
 
 if(VALGRIND_FOUND)
     add_test(NAME t-cronkite-cli-memcheck
-        COMMAND ${VG_WRAP} ${VALGRIND_EXECUTABLE} $<TARGET_FILE:cronkite-cli> -search example)
+        COMMAND ${VALGRIND_EXECUTABLE} ${VALGRIND_OPTIONS} $<TARGET_FILE:cronkite-cli> -search example)
+    set_tests_properties(t-cronkite-cli-memcheck
+        PROPERTIES ENVIRONMENT CRONKITE_AURURL=http://aur.test)
 endif(VALGRIND_FOUND)
 
