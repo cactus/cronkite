@@ -33,7 +33,6 @@ struct CKMemoryStruct {
     size_t size;
 };
 
-static void *myrealloc(void *ptr, size_t size);
 static size_t write_callback(void *ptr, size_t size, size_t nmemb, void *data);
 static int cronkite_request(const char *url, struct CKMemoryStruct *response);
 static char *cronkite_ifetch(const char *qtype, const char *term);
@@ -46,19 +45,11 @@ static CKPackage *cronkite_json_to_packlist(char *jsondata);
 int ck_errno = CK_ERR_OK;
 /* end initialize */
 
-static void *
-myrealloc(void *ptr, size_t size) {
-    if (ptr) {
-        return realloc(ptr, size);
-    }
-    return malloc(size);
-}
-
 static size_t 
 write_callback(void *ptr, size_t size, size_t nmemb, void *data) {
     size_t realsize = size * nmemb;
     struct CKMemoryStruct *mem = (struct CKMemoryStruct *)data;
-    mem->memory = myrealloc(mem->memory, mem->size + realsize + 1);
+    mem->memory = realloc(mem->memory, mem->size + realsize + 1);
     if (mem->memory) {
         memcpy(&(mem->memory[mem->size]), ptr, realsize);
         mem->size += realsize;
