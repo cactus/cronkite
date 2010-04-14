@@ -58,6 +58,6 @@ if(VALGRIND_FOUND)
     add_test(NAME t-cli-memcheck
         COMMAND ${VALGRIND_EXECUTABLE} ${VALGRIND_OPTIONS} $<TARGET_FILE:cronkite-cli> -search example)
     set_tests_properties(t-cli-memcheck PROPERTIES 
-        ENVIRONMENT CRONKITE_AURURL=http://aur.test)
+        ENVIRONMENT "CRONKITE_AURURL=http://aur.test")
 endif(VALGRIND_FOUND)
 

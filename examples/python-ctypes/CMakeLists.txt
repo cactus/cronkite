@@ -22,3 +22,10 @@ add_custom_command(
 
 add_custom_target(pycronkite-ctypes ALL
     DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/result/pycronkite.py)
+
+## add tests
+add_test(NAME t-pycronkite-nose
+    COMMAND ${PYNOSE_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/tests.py)
+set_tests_properties(t-pycronkite-nose PROPERTIES
+    ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}/../../src/;DYLD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}/../../src/")
+
