@@ -69,11 +69,11 @@ There are a few build options, and their defaults, that you can specify:
 
   Build everything -- all modules and frontends.
 
-The build steps are::
+An example of the build steps::
 
     $ mkdir build
     $ cd build
-    $ cmake -DCMAKE_INSTALL_PREFIX=/usr/local ..
+    $ cmake -DCMAKE_INSTALL_PREFIX=/usr/local -DBUILD_ALL=ON ..
     $ make
 
 
