@@ -28,7 +28,12 @@ class CKPackage(Structure):
 
 CKPackage._fields_ = [("values", c_char_p * 10), ("next", POINTER(CKPackage))]
 
-_libcronkite = cdll.LoadLibrary(find_library("cronkite"))
+libname = find_library("cronkite")
+if libname == None:
+    ## just guess. seems old version of python/ctypes on linux fail for this
+    libname = 'libcronkite.so'
+
+_libcronkite = cdll.LoadLibrary(libname)
 _libcronkite.cronkite_seturl.argtypes = [c_char_p]
 _libcronkite.cronkite_seturl.restype = c_void_p
 _libcronkite.cronkite_get.argtypes = [c_char, c_char_p]
