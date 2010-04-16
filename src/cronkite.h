@@ -42,6 +42,7 @@ typedef enum ck_errors {
     CK_ERR_ALLOC,
     CK_ERR_URLUNSET,
     CK_ERR_RESP,
+    CK_ERR_EMPTY,
     CK_ERR_CURL_INIT,
     CK_ERR_CURL_OFFSET
 } CK_ERRORS;

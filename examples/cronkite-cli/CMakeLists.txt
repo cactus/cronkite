@@ -56,9 +56,6 @@ add_test(NAME t-cli-nourl
     COMMAND ${TESTSDIR}/cli-nourl.sh $<TARGET_FILE:cronkite-cli>)
 
 ## test a result with no data
-## TODO: this test currently results in a segfault. Not sure if this is
-## libcurl yet, or not. The likelihood of this happening is *hopefully* low..
-## will look at it later..
 add_test(NAME t-cli-empty
     COMMAND ${TESTSDIR}/cli-empty.sh $<TARGET_FILE:cronkite-cli>)
 set_tests_properties(t-cli-empty PROPERTIES 

@@ -144,7 +144,11 @@ cronkite_ifetch(const char *qtype, const char *term) {
         // ck_errno should be set by cronkite_request
         return NULL;
     }
-    
+
+    if (jdata.size == 0) {
+        ck_errno = CK_ERR_EMPTY;
+        return NULL;
+    }
     result = calloc(jdata.size + 1, sizeof(char));
     int len = strlen(jdata.memory);
     strncpy(result, jdata.memory, len);
@@ -314,6 +318,8 @@ cronkite_strerror(int ck_err_val) {
             case CK_ERR_CURL_INIT:
                 return "Error initializing CURL library calls.";
                 break;
+            case CK_ERR_EMPTY:
+                return "No content! The glass is empty.";
             case CK_ERR_RESP:
                 return "Response code not 200 ok.";
                 break;
