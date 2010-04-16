@@ -11,7 +11,7 @@ import cronkite
 
 class TestCases(unittest.TestCase):
     def setUp(self):
-        cronkite.seturl('http://aur.test')
+        cronkite.seturl(os.environ['CRONKITE_AURURL'])
 
     def test_example(self):
         """Perform a test query, and validate results"""

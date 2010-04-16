@@ -1,5 +1,4 @@
 #!/bin/bash
-export CRONKITE_AURURL="http://aur.test"
 OUTPUT=$(${1} -search example 2>&1)
 rval=$?
 # echo it out once just for ctest -V output
