@@ -20,20 +20,3 @@
 #define VERSION "@PROJECT_VERSION@"
 #define UAGENT "@PROJECT_NAME@/@PROJECT_VERSION@"
 #endif
-
-/* json string for testing without hitting the tubes */
-#define CK_TEST_JSON \
-    "{\"results\":[" \
-    "{\"ID\":\"000\"," \
-    "\"Name\":\"example\"," \
-    "\"Version\":\"0\"," \
-    "\"CategoryID\":\"0\"," \
-    "\"Description\":\"Test results. With Ω!\"," \
-    "\"LocationID\":\"2\"," \
-    "\"URL\":\"http://www.example.com\"," \
-    "\"URLPath\":\"\\/packages\\/example\\/example.tar.gz\"," \
-    "\"License\":\"custom\"," \
-    "\"NumVotes\":\"3\"," \
-    "\"OutOfDate\":\"0\"}" \
-    "]}"
-

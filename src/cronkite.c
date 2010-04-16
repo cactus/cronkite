@@ -96,7 +96,7 @@ cronkite_request(const char *url, struct CKMemoryStruct *response) {
         curl_global_cleanup();
         return 1;
     }
-    if (result_code != 200) {
+    if (result_code != 0 && result_code != 200) {
         ck_errno = CK_ERR_RESP;
         curl_easy_cleanup(curl_handle);
         curl_global_cleanup();
@@ -120,12 +120,6 @@ cronkite_ifetch(const char *qtype, const char *term) {
     struct CKMemoryStruct jdata;
     jdata.memory = NULL;
     jdata.size = 0;
-
-    if (g_urlfmt && strcmp(g_urlfmt,CK_URL_TEST_STRING) == 0) {
-        char *test_return = calloc(strlen(CK_TEST_JSON) + 1, sizeof(char));
-        strcpy(test_return, CK_TEST_JSON);
-        return test_return;
-    }
 
     curl_global_init(CURL_GLOBAL_NOTHING);
     curl_handle = curl_easy_init();
@@ -307,7 +301,6 @@ cronkite_json_conv(char *jsondata) {
     
     if (!pkg_list) {
         // ck_err should be set by json_to_packlist
-        // fprintf(stderr, "error parsing json data\n");
         return NULL;
     }
 

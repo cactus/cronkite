@@ -16,7 +16,6 @@
 
 /* see http://www.rfc-editor.org/rfc/rfc2606.txt for the reasoning behind
    the name choice */
-#define CK_URL_TEST_STRING "http://aur.test"
 #define CKPKG_VAL_LEN 10
 
 typedef enum CKPKG_VAL {
