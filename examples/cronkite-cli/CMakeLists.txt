@@ -21,41 +21,53 @@ set_target_properties(cronkite-cli PROPERTIES OUTPUT_NAME cronkite-cli)
 install(TARGETS cronkite-cli DESTINATION bin)
 
 #### add tests
-## 1. test version output
+## test version output
 set(TESTSDIR ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 add_test(NAME t-cli-version
     COMMAND ${TESTSDIR}/cli-version.sh $<TARGET_FILE:cronkite-cli>)
 
-## 2. test to ensure help output works
+## test to ensure help output works
 add_test(NAME t-cli-help
     COMMAND ${TESTSDIR}/cli-help.sh $<TARGET_FILE:cronkite-cli>)
 
-## 3. test to ensure a badarg results in returnval=1
+## test to ensure a badarg results in returnval=1
 add_test(NAME t-cli-badarg
     COMMAND ${TESTSDIR}/cli-badarg.sh $<TARGET_FILE:cronkite-cli>)
 
-## 4. test to ensure a too short query does results in returnval=2
+## test to ensure a too short query does results in returnval=2
 add_test(NAME t-cli-badquery
     COMMAND ${TESTSDIR}/cli-badquery.sh $<TARGET_FILE:cronkite-cli>)
 # this test hits the network. make sure it doesn't go on forever
 set_tests_properties(t-cli-badquery
     PROPERTIES TIMEOUT 5)
 
-## 5. test a good query with a local file
+## test a good query with a local file
 add_test(NAME t-cli-localfile
     COMMAND ${TESTSDIR}/cli-localfile.sh $<TARGET_FILE:cronkite-cli>)
 set_tests_properties(t-cli-localfile PROPERTIES 
     ENVIRONMENT "CRONKITE_AURURL=file://${TESTSDIR}/example.json")
 
-## 6. test a query with a bad url
+## test a query with a bad url
 add_test(NAME t-cli-badurl
     COMMAND ${TESTSDIR}/cli-badurl.sh $<TARGET_FILE:cronkite-cli>)
 
-## 7. test a query with no url
+## test a query with no url
 add_test(NAME t-cli-nourl
     COMMAND ${TESTSDIR}/cli-nourl.sh $<TARGET_FILE:cronkite-cli>)
 
-## 8. do a valgrind run, if vangrind is found
+## test a result with no data
+add_test(NAME t-cli-empty
+    COMMAND ${TESTSDIR}/cli-empty.sh $<TARGET_FILE:cronkite-cli>)
+set_tests_properties(t-cli-empty PROPERTIES 
+    ENVIRONMENT "CRONKITE_AURURL=file://${TESTSDIR}/empty.json")
+
+## test a result containing invalid json (notjson)
+add_test(NAME t-cli-notjson
+    COMMAND ${TESTSDIR}/cli-notjson.sh $<TARGET_FILE:cronkite-cli>)
+set_tests_properties(t-cli-notjson PROPERTIES 
+    ENVIRONMENT "CRONKITE_AURURL=file://${TESTSDIR}/notjson.txt")
+
+## do a valgrind run, if vangrind is found
 if(VALGRIND_FOUND)
     add_test(NAME t-cli-memcheck
         COMMAND ${VALGRIND_EXECUTABLE} ${VALGRIND_OPTIONS} $<TARGET_FILE:cronkite-cli> -search example)
