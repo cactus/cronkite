@@ -77,6 +77,14 @@ An example of the build steps::
     $ make
 
 
+Running Tests
+-------------
+
+To run the tests, do the following after the build phase::
+
+    $ make test
+
+
 Installing
 ----------
 
