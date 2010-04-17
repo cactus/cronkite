@@ -1,18 +1,25 @@
-if(A2X)
-    a2x_build_manpage(manpage_depends
-        libcronkite.3.txt libcronkite.3 ${BUILD_VERSION})
+if(POD2MAN_FOUND)
+    p2m_build(manpage_depends ${CMAKE_CURRENT_SOURCE_DIR}/cronkite.3.pod ${BUILD_VERSION})
+    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/cronkite_seturl.3
+        ".so man3/cronkite.3\n")
     file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/cronkite_get.3
-        ".so man3/libcronkite.3\n")
+        ".so man3/cronkite.3\n")
     file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/cronkite_cleanup.3
-        ".so man3/libcronkite.3\n")
+        ".so man3/cronkite.3\n")
+    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/cronkite_strerror.3
+        ".so man3/cronkite.3\n")
     ## prebuild manpages
     install(FILES
+        ${CMAKE_CURRENT_BINARY_DIR}/cronkite_seturl.3
         ${CMAKE_CURRENT_BINARY_DIR}/cronkite_get.3
         ${CMAKE_CURRENT_BINARY_DIR}/cronkite_cleanup.3
+        ${CMAKE_CURRENT_BINARY_DIR}/cronkite_strerror.3
         DESTINATION "share/man/man3"
         PERMISSIONS OWNER_READ GROUP_READ WORLD_READ)
     add_custom_target(cronkite-man ALL
         DEPENDS ${manpage_depends}
+            ${CMAKE_CURRENT_BINARY_DIR}/cronkite_seturl.3
             ${CMAKE_CURRENT_BINARY_DIR}/cronkite_get.3
-            ${CMAKE_CURRENT_BINARY_DIR}/cronkite_cleanup.3)
-endif(A2X)
+            ${CMAKE_CURRENT_BINARY_DIR}/cronkite_cleanup.3
+            ${CMAKE_CURRENT_BINARY_DIR}/cronkite_strerror.3)
+endif(POD2MAN_FOUND)

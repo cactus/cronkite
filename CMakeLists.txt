@@ -32,6 +32,15 @@ set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/modules ${CMAKE_MODULE_PATH})
 include(MacroOutOfSourceBuild)
 macro_ensure_out_of_source_build("${PROJECT_NAME} requires an out tree build.")
 
+## import manpage build helper macros
+
+## find out if we can build manpages
+include(BuildManpage)
+find_package(Pod2man)
+if(NOT POD2MAN_FOUND)
+    MESSAGE("!! pod2man not found. Manpage generation will not be available.")
+endif(NOT POD2MAN_FOUND)
+
 ## setup testing harness stuffs
 enable_testing()
 find_package(Valgrind QUIET)
@@ -43,14 +52,6 @@ else(NOT VALGRIND_FOUND)
         --show-reachable=yes --num-callers=30
         --leak-check=summary --leak-resolution=high)
 endif(NOT VALGRIND_FOUND)
-
-## find out if we can build manpages
-find_program(A2X a2x)
-if(NOT A2X)
-    MESSAGE("!! a2x not found. Manpage generation will not be available.")
-else(NOT A2X)
-    include(BuildManpage)
-endif(NOT A2X)
 
 ## subdir inclues / conditional includes
 subdirs(src)

@@ -1,0 +1,86 @@
+=pod
+
+=head1 NAME
+
+cronkite - a library used to fetch and preparse aur/aurjson data
+
+
+=head1 SYNOPSIS
+
+B<< #include <cronkite.h> >>
+
+I<void>E<10> E<8>E<8>
+B<cronkite_seturl>(I<const char *urlfmt>);
+
+I<CKPackage *>E<10> E<8>E<8>
+B<cronkite_get>(I<const char t, const char *term>);
+
+I<void>E<10> E<8>E<8>
+B<cronkite_cleanup>(I<CKPackage *ckresult>);
+
+I<const char *>E<10> E<8>E<8>
+B<cronkite_strerror>(I<int ck_err_val>);
+
+
+=head1 DESCRIPTION
+
+The archlinux aur.rpc mechanism requires url creation, json data fetching over
+http, json data parsing, and eventual presentation to the end user.
+
+The libcronkite library helps by doing all but the last step.
+
+B<cronkite_seturl>() is used to set the aur target url. Expected strings are
+either an http url, or a file url. For example:
+
+    // http url
+    cronkite_seturl("http://aur.archlinux.org/rpc.php?type=%s&arg=%s");
+    // local file url
+    cronkite_seturl("file:///tmp/test.json");
+
+B<cronkite_get>() is the query/poll interface. It takes two arguments, and
+returns a I<CKPackage> struct. (See I<< <cronkite.h> >> for the contents of the
+struct.)
+
+The I<CKPackage> struct is as follows (defined in I<< <cronkite.h> >>):
+
+    struct CKPackage {
+        char *values[CKPKG_VAL_LEN];
+        struct CKPackage *next;
+    };
+
+Each I<CKPackage> pointer is the head of a descending linked list (or C<NULL>).
+When C<NULL> is returned, I<ck_errno> will be set to the C<CK_ERR> value.
+
+Memory is allocated for the I<CKPackage> struct that is returned, so make sure
+to free it with B<cronkite_cleanup>() when you are done with it.
+
+B<cronkite_cleanup>() is the cleanup mechanism. This function takes as an
+argument, a I<CKPackage> struct pointer. It frees the memory in the struct, and
+descendes the linked list freeing memory, and then returns.
+
+B<cronkite_strerror>() is used to convert the I<ck_errno> C<CK_ERR> value (error
+result when function B<cronkite_get>() returns C<NULL>) and convert it into a
+string for user output.
+
+
+=head1 BUGS
+
+Quite possible. Submit bugs to the github site listed in L</RESOURCES> below.
+
+
+=head1 AUTHOR
+
+cactus <elij.mx@gmail.com>
+
+
+=head1 RESOURCES
+
+Github: L<< http://github.com/cactus/cronkite >>
+
+
+=head1 COPYING
+
+Free use of this software is granted under the terms of the Apache License,
+Version 2.0.
+
+=cut
