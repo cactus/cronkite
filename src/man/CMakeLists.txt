@@ -1,5 +1,5 @@
 if(MAN)
-    p2m_build(manpage_depends ${CMAKE_CURRENT_SOURCE_DIR}/cronkite.3.pod ${BUILD_VERSION})
+    p2m_build(manpage_depends ${CMAKE_CURRENT_SOURCE_DIR}/cronkite.3.pod ${API_VERSION})
     file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/cronkite_seturl.3
         ".so man3/cronkite.3\n")
     file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/cronkite_get.3
