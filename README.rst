@@ -15,7 +15,7 @@ Build requirements:
 
 Optional build requirements:
 
-- a2x / asciidoc (required to build manpages)
+- pod2man (required to build manpages)
 - lua (required for building the lua extension)
 - python (required for building python extensions)
 - python-nose (for tests only - required to run python extension tests)
