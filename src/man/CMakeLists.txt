@@ -1,4 +1,4 @@
-if(POD2MAN_FOUND)
+if(MAN)
     p2m_build(manpage_depends ${CMAKE_CURRENT_SOURCE_DIR}/cronkite.3.pod ${BUILD_VERSION})
     file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/cronkite_seturl.3
         ".so man3/cronkite.3\n")
@@ -22,4 +22,4 @@ if(POD2MAN_FOUND)
             ${CMAKE_CURRENT_BINARY_DIR}/cronkite_get.3
             ${CMAKE_CURRENT_BINARY_DIR}/cronkite_cleanup.3
             ${CMAKE_CURRENT_BINARY_DIR}/cronkite_strerror.3)
-endif(POD2MAN_FOUND)
+endif(MAN)

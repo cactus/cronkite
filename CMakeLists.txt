@@ -37,9 +37,11 @@ macro_ensure_out_of_source_build("${PROJECT_NAME} requires an out tree build.")
 ## find out if we can build manpages
 include(BuildManpage)
 find_package(Pod2man)
-if(NOT POD2MAN_FOUND)
+if(POD2MAN_FOUND)
+    set(MAN TRUE)
+else(POD2MAN_FOUND)
     MESSAGE("!! pod2man not found. Manpage generation will not be available.")
-endif(NOT POD2MAN_FOUND)
+endif(POD2MAN_FOUND)
 
 ## setup testing harness stuffs
 enable_testing()

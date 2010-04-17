@@ -1,0 +1,117 @@
+=pod
+
+=head1 NAME
+
+cronkite-cli - aurjson helper utility
+
+=head1 SYNOPSIS
+
+B<cronkite-cli> [I<OPTIONS>] [I<OPTION-ARGUMENTS>]
+
+
+=head1 DESCRIPTION
+
+The L<cronkite-cli(1)> command is a helper utility, for those writing AUR
+command line utilities. The goal is to ease the usage of the aurjson interface,
+by providing a pre-parsed output for more friendly grep'ing and sed'ing.
+
+cronkite-cli is powered by libcronkite. See libcronkite(3) for more details.
+
+
+=head1 OPTIONS
+
+=over
+
+=item B<-msearch> C<MAINTAINER-NAME>
+
+Search for a package by 'MAINTAINER-NAME'.
+
+=item B<-search> C<SEARCH-TERM>
+
+Search for a package by 'SEARCH-TERM'.
+
+=item B<-info> C<PKG-NAME>
+
+Get info for a package named 'PKG-NAME'.
+
+=item B<version>
+
+Show version and exit.
+
+=item B<-help>
+
+Show simple help and exit.
+
+=back
+
+=head1 ENVIRONMENT
+
+The following environment variables affect the execution of L<cronkite-cli(1)>:
+
+=over
+
+=item I<CRONKITE_DELIMITER>
+
+Specifies the delimiter/separator between the elements in the L<OUTPUT FORMAT>.
+Defaults to `\t` if not set.  
+
+=item I<CRONKITE_AURURL>
+
+Specifies the destination url for queries. If not provided, the default AURURL is used.
+
+=back
+
+=head1 OUTPUT FORMAT
+
+Each result in the output is emitted as a L</CRONKITE_DELIMITER> separated list,
+containing the following aurjson result elements, in this order:
+
+    Name
+    ID
+    Version
+    CategoryID
+    Description
+    URL
+    URLPath
+    License
+    NumVotes
+    OutOfDate
+
+
+=head1 EXIT STATUS
+
+=over
+
+=item B<0>
+
+Success
+
+=item B<1>
+
+Failure
+
+=item B<2>
+
+No results found, or results unparsable.
+
+=back
+
+=head1 BUGS
+
+Bugs!? No way! :P
+
+
+=head1 AUTHOR
+
+cactus <elij.mx@gmail.com>
+
+
+=head1 RESOURCES
+
+Github: <http://github.com/cactus/cronkite>
+
+
+=head1 COPYING
+
+Free use of this software is granted under the terms of the Apache License,
+Version 2.0.
