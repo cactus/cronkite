@@ -24,8 +24,8 @@ add_custom_target(pycronkite-ctypes ALL
     DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/result/cronkite.py)
 
 ## add tests
-add_test(NAME t-pycronkite-ctypes-nose
-    COMMAND ${PYNOSE_EXECUTABLE} ${CMAKE_SOURCE_DIR}/examples/python-tests/tests.py)
-set_tests_properties(t-pycronkite-ctypes-nose PROPERTIES
+add_test(NAME t-pycronkite-ctypes
+    COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/examples/python-tests/tests.py)
+set_tests_properties(t-pycronkite-ctypes PROPERTIES
     ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}/../../src/;DYLD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}/../../src/;CRONKITE_AURURL=file://${CMAKE_SOURCE_DIR}/examples/cronkite-cli/tests/example.json")
 

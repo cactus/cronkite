@@ -24,3 +24,6 @@ class TestCases(unittest.TestCase):
         self.assertRaises(
             exceptions.TypeError, cronkite.query, ('wrong', 'example'))
 
+if __name__ == '__main__':
+    unittest.main()
+
