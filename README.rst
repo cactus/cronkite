@@ -40,12 +40,12 @@ There are a few build options, and their defaults, that you can specify:
 
 - **CMAKE_INSTALL_PREFIX** = ``/usr/local``
 
-  The target prefix that make install will install to.
+  The target prefix that make install will install to.   
   This is what you would expect from ``./configure --prefix=foo``
 
 - **CMAKE_BUILD_TYPE** = ``Release``
 
-  Specifies the build type for make based generators.
+  Specifies the build type for make based generators.   
   Possible values: Debug, Release, MinSizeRel
 
 - **BUILD_LUA_MODULE** = ``OFF``
