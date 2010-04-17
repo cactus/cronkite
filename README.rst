@@ -20,7 +20,7 @@ Optional build requirements:
 - python (required to build python extensions)
 - valgrind (for tests only - memory leak test uses this)
 
-Include 3rd party libraries:
+Included 3rd party libraries:
 
 - cJSON_ (src/cJSON)
 
