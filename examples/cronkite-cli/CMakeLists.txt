@@ -5,7 +5,7 @@ link_directories(${CMAKE_CURRENT_BINARY_DIR}/../../src)
 
 if(MAN)
     p2m_build(cli-manpage_depends ${CMAKE_CURRENT_SOURCE_DIR}/cronkite-cli.1.pod ${BUILD_VERSION})
-    add_custom_target(cronkite-cli-man ALL DEPENDS ${cli-manpage_depends})
+    add_custom_target(man-cronkite-cli ALL DEPENDS ${cli-manpage_depends})
 endif(MAN)
 
 configure_file(
