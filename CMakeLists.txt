@@ -22,7 +22,7 @@ endif(APPLE)
 ## set a default build type if not set
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release CACHE STRING
-      "Choose the type: Debug Release MinSizeRel." FORCE)
+      "Choose the type: Debug Release MinSizeRel" FORCE)
 endif(NOT CMAKE_BUILD_TYPE)
 
 ## set module include path
