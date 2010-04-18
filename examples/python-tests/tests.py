@@ -11,7 +11,7 @@ import cronkite
 
 class TestCases(unittest.TestCase):
     def setUp(self):
-        cronkite.seturl(os.environ['CRONKITE_AURURL'])
+        cronkite.setopt('AURURL', os.environ['CRONKITE_AURURL'])
 
     def test_example(self):
         """Perform a test query, and validate results"""
@@ -23,6 +23,13 @@ class TestCases(unittest.TestCase):
         """Ensure cronkite.query throws typeerror"""
         self.assertRaises(
             exceptions.TypeError, cronkite.query, ('wrong', 'example'))
+
+    def test_badset(self):
+        self.assertRaises(
+            exceptions.TypeError, cronkite.setopt,
+            ('BADVAL', "fffffffuuuuuuuuuuuu"))
+        self.assertRaises(
+            exceptions.TypeError, cronkite.setopt, ('BADVAL'))
 
 if __name__ == '__main__':
     unittest.main()

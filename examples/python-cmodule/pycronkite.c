@@ -20,16 +20,28 @@
 #include <cronkite.h>
 
 static PyObject *ck_query(PyObject *self, PyObject *args);
-static PyObject *ck_seturl(PyObject *self, PyObject *args);
+static PyObject *ck_setopt(PyObject *self, PyObject *args);
 static PyObject *CronkiteError;
 
-static PyObject *ck_seturl(PyObject *self, PyObject *args){
-    char *urlfmt = NULL;
+static PyObject *ck_setopt(PyObject *self, PyObject *args){
+    char *ovalue;
+    char *ck_option;
 
-    if (!PyArg_ParseTuple(args, "s", &urlfmt)) {
+    if (!PyArg_ParseTuple(args, "ss", &ck_option, &ovalue)) {
         return NULL;
     }
-    cronkite_seturl(urlfmt);
+
+    if (strcasecmp(ck_option, "AURURL") == 0) {
+        cronkite_setopt(CK_OPT_AURURL, ovalue);
+    }
+    else if (strcasecmp(ck_option, "HTTP_PROXY") == 0) {
+        cronkite_setopt(CK_OPT_HTTP_PROXY, ovalue);
+    }
+    else {
+        PyErr_SetString(PyExc_ValueError, "Option not valid");
+        return NULL;
+    }
+
     Py_INCREF(Py_None);
     return Py_None;
 }
@@ -96,8 +108,8 @@ static PyObject *ck_query(PyObject *self, PyObject *args) {
 static PyMethodDef CRONKITE_METHODS[] = {
     {"query", ck_query, METH_VARARGS, 
         "query(qtype, qstring) -> list\n\nPerform a search on the aur."},
-    {"seturl", ck_seturl, METH_VARARGS,
-        "seturl(urlfmt) -> None\n\nSet query urlformat."}, 
+    {"setopt", ck_setopt, METH_VARARGS,
+        "setopt(option, value) -> None\n\nSet cronkite option."}, 
     {NULL, NULL, 0, NULL} /* sentinel */
 };
 

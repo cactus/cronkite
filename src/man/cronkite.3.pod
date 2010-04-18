@@ -10,7 +10,7 @@ cronkite - a library used to fetch and preparse aur/aurjson data
 B<< #include <cronkite.h> >>
 
 I<void>E<10> E<8>E<8>
-B<cronkite_seturl>(I<const char *urlfmt>);
+B<cronkite_setopt>(I<const char *option, const char *value>);
 
 I<CKPackage *>E<10> E<8>E<8>
 B<cronkite_get>(I<const char t, const char *term>);
@@ -29,13 +29,30 @@ http, json data parsing, and eventual presentation to the end user.
 
 The libcronkite library helps by doing all but the last step.
 
-B<cronkite_seturl>() is used to set the aur target url. Expected strings are
-either an http url, or a file url. For example:
+B<cronkite_setopt>() is used to set various runtime values. The current values
+are:
+
+=over
+
+=item CK_OPT_AURUR
+
+This is the aururl. This can be a C<file:///> or a C<http://> url.
 
     // http url
-    cronkite_seturl("http://aur.archlinux.org/rpc.php?type=%s&arg=%s");
+    cronkite_setopt(CK_OPT_AURURL, 
+        "http://aur.archlinux.org/rpc.php?type=%s&arg=%s");
     // local file url
-    cronkite_seturl("file:///tmp/test.json");
+    cronkite_setopt(CK_OPT_AURURL, 
+        "file:///tmp/test.json");
+
+=item CK_OPT_HTTP_PROXY
+
+This is the url for an http proxy. The port can be appended to the url.
+
+    cronkite_setopt(CK_OPT_HTTP_PROXY, 
+        "http://localhost:8080");
+
+=back
 
 B<cronkite_get>() is the query/poll interface. It takes two arguments, and
 returns a I<CKPackage> struct. (See I<< <cronkite.h> >> for the contents of the
@@ -44,8 +61,8 @@ struct.)
 The I<CKPackage> struct is as follows (defined in I<< <cronkite.h> >>):
 
     struct CKPackage {
-        char *values[CKPKG_VAL_LEN];
-        struct CKPackage *next;
+        char *values; //array of pkg values. size is CK_PKG_MAX.
+        struct CKPackage *next; // pointer to next package.
     };
 
 Each I<CKPackage> pointer is the head of a descending linked list (or C<NULL>).

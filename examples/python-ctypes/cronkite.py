@@ -34,8 +34,8 @@ if libname == None:
     libname = 'libcronkite.so'
 
 _libcronkite = cdll.LoadLibrary(libname)
-_libcronkite.cronkite_seturl.argtypes = [c_char_p]
-_libcronkite.cronkite_seturl.restype = c_void_p
+_libcronkite.cronkite_setopt.argtypes = [c_int, c_char_p]
+_libcronkite.cronkite_setopt.restype = c_void_p
 _libcronkite.cronkite_get.argtypes = [c_char, c_char_p]
 _libcronkite.cronkite_get.restype = POINTER(CKPackage)
 _libcronkite.cronkite_cleanup.argtypes = [POINTER(CKPackage)]
@@ -43,6 +43,10 @@ _libcronkite.cronkite_cleanup.restype = c_void_p
 _libcronkite.cronkite_strerror.argtypes = [c_int]
 _libcronkite.cronkite_strerror.restype = c_char_p
 ck_errno = c_int.in_dll(_libcronkite, "ck_errno")
+
+# manually define the enum for ck_options
+CK_OPT_AURURL = 0
+CK_OPT_HTTP_PROXY = 1
 
 def q_unpack(cpkg):
     return {"id":          cpkg.contents.values[0],
@@ -56,8 +60,14 @@ def q_unpack(cpkg):
             "categoryid":  cpkg.contents.values[8],
             "description": cpkg.contents.values[9]}
 
-def seturl(newurl):
-    _libcronkite.cronkite_seturl(newurl);
+def setopt(opt, val):
+    optUC = opt.upper()
+    if (optUC == 'AURURL'):
+        _libcronkite.cronkite_setopt(CK_OPT_AURURL, val);
+    elif (optUC == 'HTTP_PROXY'):
+        _libcronkite.cronkite_setopt(CK_OPT_HTTP_PROXY, val);
+    else:
+        raise exceptions.TypeError("Bad option")
 
 def query(qtype, qstring):
     if not qtype == 's' and not qtype == 'i' and not qtype == 'm':

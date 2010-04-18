@@ -112,8 +112,13 @@ main(int argc, char *argv[]) {
     if (aur_url == NULL) {
         aur_url = "http://aur.archlinux.org/rpc.php?type=%s&arg=%s";
     }
+    cronkite_setopt(CK_OPT_AURURL, aur_url);
 
-    cronkite_seturl(aur_url);
+    char *proxy = getenv("HTTP_PROXY");
+    if (proxy) {
+        cronkite_setopt(CK_OPT_HTTP_PROXY, proxy);
+    }
+
     results = cronkite_get(qtype, argv[2]);
 
     if (results) {

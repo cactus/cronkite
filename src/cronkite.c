@@ -26,13 +26,17 @@
 #include "config.h"
 
 /* local declarations -- not exported */
-static char *g_urlfmt = NULL;
+struct CKoptions {
+    char *aururl;
+    char *proxyurl;
+};
 
 struct CKMemoryStruct {
     char *memory;
     size_t size;
 };
 
+static struct CKoptions *g_options;
 static size_t write_callback(void *ptr, size_t size, size_t nmemb, void *data);
 static int cronkite_request(const char *url, struct CKMemoryStruct *response);
 static char *cronkite_ifetch(const char *qtype, const char *term);
@@ -124,8 +128,8 @@ cronkite_ifetch(const char *qtype, const char *term) {
     curl_global_init(CURL_GLOBAL_NOTHING);
     curl_handle = curl_easy_init();
     esc_term = curl_easy_escape(curl_handle, term, 0);
-    reqlen = strlen(g_urlfmt) + strlen(qtype) + strlen(esc_term);
-    // since the placeholders in g_urlfmt exist, no need to pad the
+    reqlen = strlen(g_options->aururl) + strlen(qtype) + strlen(esc_term);
+    // since the placeholders in g_options->aururl exist, no need to pad the
     // length for later snprintf
     url = calloc(reqlen, sizeof(char));
     if (url == NULL) {
@@ -135,7 +139,7 @@ cronkite_ifetch(const char *qtype, const char *term) {
         curl_global_cleanup();
         return NULL;
     }
-    snprintf(url, reqlen, g_urlfmt, qtype, esc_term);
+    snprintf(url, reqlen, g_options->aururl, qtype, esc_term);
     curl_free(esc_term);
     curl_easy_cleanup(curl_handle);
     curl_global_cleanup();
@@ -180,16 +184,16 @@ cronkite_get_obj(cJSON *elem, char *name) {
 static CKPackage *
 cronkite_pack_result(cJSON *pkg_p) {
     CKPackage *pkg = (CKPackage *) calloc(1, sizeof(CKPackage));
-    pkg->values[CKPKG_ID] = cronkite_get_obj(pkg_p, "id");
-    pkg->values[CKPKG_URL] = cronkite_get_obj(pkg_p, "url");
-    pkg->values[CKPKG_NAME] = cronkite_get_obj(pkg_p, "name");
-    pkg->values[CKPKG_VERSION] = cronkite_get_obj(pkg_p, "version");
-    pkg->values[CKPKG_URLPATH] = cronkite_get_obj(pkg_p, "urlpath");
-    pkg->values[CKPKG_LICENSE] = cronkite_get_obj(pkg_p, "license");
-    pkg->values[CKPKG_NUMVOTES] = cronkite_get_obj(pkg_p, "numvotes");
-    pkg->values[CKPKG_OUTOFDATE] = cronkite_get_obj(pkg_p, "outofdate");
-    pkg->values[CKPKG_CATEGORYID] = cronkite_get_obj(pkg_p, "categoryid");
-    pkg->values[CKPKG_DESCRIPTION] = cronkite_get_obj(pkg_p, "description");
+    pkg->values[CK_PKG_ID] = cronkite_get_obj(pkg_p, "id");
+    pkg->values[CK_PKG_URL] = cronkite_get_obj(pkg_p, "url");
+    pkg->values[CK_PKG_NAME] = cronkite_get_obj(pkg_p, "name");
+    pkg->values[CK_PKG_VERSION] = cronkite_get_obj(pkg_p, "version");
+    pkg->values[CK_PKG_URLPATH] = cronkite_get_obj(pkg_p, "urlpath");
+    pkg->values[CK_PKG_LICENSE] = cronkite_get_obj(pkg_p, "license");
+    pkg->values[CK_PKG_NUMVOTES] = cronkite_get_obj(pkg_p, "numvotes");
+    pkg->values[CK_PKG_OUTOFDATE] = cronkite_get_obj(pkg_p, "outofdate");
+    pkg->values[CK_PKG_CATEGORYID] = cronkite_get_obj(pkg_p, "categoryid");
+    pkg->values[CK_PKG_DESCRIPTION] = cronkite_get_obj(pkg_p, "description");
     pkg->next = NULL;
     return pkg;
 }
@@ -240,7 +244,7 @@ cronkite_cleanup(CKPackage *ckpackage) {
     CKPackage *next = NULL;
 
     while (ckpkg) {
-        for (int i=0; i<CKPKG_VAL_LEN; i++) {
+        for (int i=0; i<CK_PKG_SIGIL; i++) {
             if (ckpkg->values[i]) {
                 free(ckpkg->values[i]);
             }
@@ -249,8 +253,14 @@ cronkite_cleanup(CKPackage *ckpackage) {
         free(ckpkg);
         ckpkg = next;
     }
-    if (g_urlfmt != NULL) {
-        free(g_urlfmt);
+    if (g_options) {
+        if (g_options->aururl) {
+            free(g_options->aururl);
+        }
+        if (g_options->proxyurl) {
+            free(g_options->proxyurl);
+        }
+        free(g_options);
     }
 }
 
@@ -276,7 +286,7 @@ cronkite_get(const char t, const char *term) {
             break;
     }
 
-    if (g_urlfmt == NULL) {
+    if (!g_options || !g_options->aururl) {
         ck_errno = CK_ERR_URLUNSET;
         return NULL;
     }
@@ -347,8 +357,23 @@ cronkite_strerror(int ck_err_val) {
 }
 
 void
-cronkite_seturl(const char *urlfmt) {
-    g_urlfmt = calloc(strlen(urlfmt) + 1, sizeof(char));
-    strcpy(g_urlfmt, urlfmt);
+cronkite_setopt(int opt, const char *val) {
+    if (!g_options) {
+        g_options = malloc(sizeof(struct CKoptions));
+        g_options->aururl = NULL;
+        g_options->proxyurl = NULL;
+    }
+    switch (opt) {
+        case CK_OPT_AURURL:
+            g_options->aururl = calloc(strlen(val) + 1, sizeof(char));
+            strcpy(g_options->aururl, val);
+            break;
+        case CK_OPT_HTTP_PROXY:
+            g_options->proxyurl = calloc(strlen(val) + 1, sizeof(char));
+            strcpy(g_options->proxyurl, val);
+            break;
+        default:
+            break;
+    }
 }
 

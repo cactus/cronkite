@@ -24,7 +24,7 @@
 #include <cronkite.h>
 
 static int ck_test(lua_State *L);
-static int ck_seturl(lua_State *L);
+static int ck_setopt(lua_State *L);
 static int ck_query(lua_State *L);
 LUALIB_API int luaopen_luacronkite(lua_State *L);
 
@@ -44,18 +44,31 @@ static int ck_test(lua_State *L) {
     return 1;
 }
 
-static int ck_seturl(lua_State *L) {
+static int ck_setopt(lua_State *L) {
     int n = lua_gettop(L);
-    if (n != 1) {
+    if (n != 2) {
         lua_pushstring(L, "Wrong number of arguments");
         lua_error(L);
     }
-    if (!lua_isstring(L, 1)) {
+    if (!lua_isstring(L, 1) || !lua_isstring(L, 2)) {
         lua_pushstring(L, "incorrect argument type");
         lua_error(L);
     }
-    const char *urlfmt = luaL_checkstring(L, 1);
-    cronkite_seturl(urlfmt);
+
+    const char *opt = luaL_checkstring(L, 1);
+    const char *val = luaL_checkstring(L, 1);
+
+    if (strcasecmp(opt, "AURURL") == 0) {
+        cronkite_setopt(CK_OPT_AURURL, val);
+    }
+    else if (strcasecmp(opt, "HTTP_PROXY") == 0) {
+        cronkite_setopt(CK_OPT_HTTP_PROXY, val);
+    }
+    else {
+        lua_pushstring(L, "Option not valid");
+        lua_error(L);
+    }
+
     return 0;
 }
 
@@ -132,7 +145,7 @@ static int ck_query(lua_State *L) {
 }
 
 static const struct luaL_Reg ck_fcs[] = {
-    {"seturl", ck_seturl},
+    {"setopt", ck_setopt},
     {"query", ck_query},
     {"test", ck_test},
     {NULL, NULL} /* sentinal */
