@@ -31,10 +31,10 @@ static PyObject *ck_setopt(PyObject *self, PyObject *args){
         return NULL;
     }
 
-    if (strcasecmp(ck_option, "AURURL") == 0) {
+    if (strcmp(ck_option, "AURURL") == 0) {
         cronkite_setopt(CK_OPT_AURURL, ovalue);
     }
-    else if (strcasecmp(ck_option, "HTTP_PROXY") == 0) {
+    else if (strcmp(ck_option, "HTTP_PROXY") == 0) {
         cronkite_setopt(CK_OPT_HTTP_PROXY, ovalue);
     }
     else {

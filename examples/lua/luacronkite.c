@@ -28,7 +28,6 @@ static int ck_setopt(lua_State *L);
 static int ck_query(lua_State *L);
 LUALIB_API int luaopen_luacronkite(lua_State *L);
 
-
 static int ck_test(lua_State *L) {
     int n = lua_gettop(L);
     if (n != 1) {
@@ -58,10 +57,10 @@ static int ck_setopt(lua_State *L) {
     const char *opt = luaL_checkstring(L, 1);
     const char *val = luaL_checkstring(L, 1);
 
-    if (strcasecmp(opt, "AURURL") == 0) {
+    if (strcmp(opt, "AURURL") == 0) {
         cronkite_setopt(CK_OPT_AURURL, val);
     }
-    else if (strcasecmp(opt, "HTTP_PROXY") == 0) {
+    else if (strcmp(opt, "HTTP_PROXY") == 0) {
         cronkite_setopt(CK_OPT_HTTP_PROXY, val);
     }
     else {
