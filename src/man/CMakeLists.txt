@@ -1,4 +1,7 @@
 if(MAN)
+    p2m_build(cli-manpage_depends ${CMAKE_CURRENT_SOURCE_DIR}/cronkite-cli.1.pod ${BUILD_VERSION})
+    add_custom_target(man-cronkite-cli ALL DEPENDS ${cli-manpage_depends})
+
     p2m_build(manpage_depends ${CMAKE_CURRENT_SOURCE_DIR}/cronkite.3.pod ${API_VERSION})
     file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/cronkite_seturl.3
         ".so man3/cronkite.3\n")

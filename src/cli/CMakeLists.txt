@@ -1,12 +1,7 @@
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../src)
-link_directories(${CMAKE_CURRENT_BINARY_DIR}/../../src)
-
-if(MAN)
-    p2m_build(cli-manpage_depends ${CMAKE_CURRENT_SOURCE_DIR}/cronkite-cli.1.pod ${BUILD_VERSION})
-    add_custom_target(man-cronkite-cli ALL DEPENDS ${cli-manpage_depends})
-endif(MAN)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../lib/)
+link_directories(${CMAKE_CURRENT_BINARY_DIR}/../lib/)
 
 configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/cli.h.in

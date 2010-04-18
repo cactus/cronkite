@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.6) 
 project(cronkite C)
 
-set(BUILD_VERSION "0.5.0")
+set(BUILD_VERSION "0.5.1")
 set(API_VERSION "0.5.0")
 set(PROJECT_VERSION ${BUILD_VERSION})
 
@@ -33,9 +33,8 @@ include(MacroOutOfSourceBuild)
 macro_ensure_out_of_source_build("${PROJECT_NAME} requires an out tree build.")
 
 ## import manpage build helper macros
-
-## find out if we can build manpages
 include(BuildManpage)
+## find out if we can build manpages
 find_package(Pod2man)
 if(POD2MAN_FOUND)
     set(MAN TRUE)
@@ -57,25 +56,3 @@ endif(NOT VALGRIND_FOUND)
 
 ## subdir inclues / conditional includes
 subdirs(src)
-
-option(BUILD_ALL "Build all modules and examples" OFF)
-
-option(BUILD_EXAMPLE_CLI "Build example cronkite cli" OFF)
-if(BUILD_ALL OR BUILD_EXAMPLE_CLI)
-    subdirs(examples/cronkite-cli/)
-endif(BUILD_ALL OR BUILD_EXAMPLE_CLI)
-
-option(BUILD_LUA_MODULE "Build lua module extension" OFF)
-if(BUILD_ALL OR BUILD_LUA_MODULE)
-    subdirs(examples/lua/)
-endif(BUILD_ALL OR BUILD_LUA_MODULE)
-
-option(BUILD_PYTHON_CMODULE "Build python cmodule style extension" OFF)
-if(BUILD_ALL OR BUILD_PYTHON_CMODULE)
-    subdirs(examples/python-cmodule/)
-endif(BUILD_ALL OR BUILD_PYTHON_CMODULE)
-
-option(BUILD_PYTHON_CTYPES "Build python ctypes style extension" OFF)
-if(BUILD_ALL OR BUILD_PYTHON_CTYPES)
-    subdirs(examples/python-ctypes/)
-endif(BUILD_ALL OR BUILD_PYTHON_CTYPES)
