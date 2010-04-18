@@ -82,6 +82,9 @@ cronkite_request(const char *url, struct CKMemoryStruct *response) {
     curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, (void *)response);
     curl_easy_setopt(curl_handle, CURLOPT_USERAGENT, UAGENT);
     curl_easy_setopt(curl_handle, CURLOPT_ENCODING, "deflate, gzip");
+    if (g_options && g_options->proxyurl) {
+        curl_easy_setopt(curl_handle, CURLOPT_PROXY, g_options->proxyurl);
+    }
 
     status = curl_easy_perform(curl_handle);
     if (status != 0) {
