@@ -9,16 +9,14 @@ Requirements
 
 Build requirements:
 
-- cmake
 - gcc
+- cmake
 - libcurl
 
 Optional build requirements:
 
 - pod2man (required to build manpages)
-- lua (required to build the lua extension)
-- python (required to build python extensions)
-- valgrind (for tests only - memory leak test uses this)
+- valgrind (required to run memory leak test)
 
 Included 3rd party libraries:
 
@@ -27,8 +25,6 @@ Included 3rd party libraries:
 Run requirements:
 
 - libcurl
-- lua (lua extension only)
-- python (python extensions only)
 
 .. _cJSON: http://sourceforge.net/projects/cjson/
 
