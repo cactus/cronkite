@@ -244,7 +244,7 @@ cronkite_cleanup(CKPackage *ckpackage) {
     CKPackage *next = NULL;
 
     while (ckpkg) {
-        for (int i=0; i<CK_PKG_SIGIL; i++) {
+        for (int i=0; i<CK_PKG_MAX; i++) {
             if (ckpkg->values[i]) {
                 free(ckpkg->values[i]);
             }
