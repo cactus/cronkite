@@ -25,7 +25,7 @@
 #include "cronkite.h"
 #include "config.h"
 
-/* local declarations -- not exported */
+/* local struct declarations -- not exported */
 struct CKoptions {
     char *aururl;
     char *proxyurl;
@@ -36,7 +36,7 @@ struct CKMemoryStruct {
     size_t size;
 };
 
-static struct CKoptions *g_options;
+/* local function declarations -- not exported */
 static size_t write_callback(void *ptr, size_t size, size_t nmemb, void *data);
 static int cronkite_request(const char *url, struct CKMemoryStruct *response);
 static char *cronkite_ifetch(const char *qtype, const char *term);
@@ -45,10 +45,14 @@ static CKPackage *cronkite_pack_result(cJSON *result);
 static CKPackage *cronkite_json_to_packlist(char *jsondata);
 /* end local declarations */
 
-/* initialize exported globals */
+/* initialize local globals -- not exported */
+static struct CKoptions *g_options;
+
+/* initialize exported globals -- exported -- extern in header */
 int ck_errno = CK_ERR_OK;
 /* end initialize */
 
+/* callback write function. used by curl. */
 static size_t 
 write_callback(void *ptr, size_t size, size_t nmemb, void *data) {
     size_t realsize = size * nmemb;
@@ -62,6 +66,7 @@ write_callback(void *ptr, size_t size, size_t nmemb, void *data) {
     return realsize;
 }
 
+/* uses libcurl to perform a request. */
 static int 
 cronkite_request(const char *url, struct CKMemoryStruct *response) {
     ck_errno = CK_ERR_OK;
@@ -95,7 +100,8 @@ cronkite_request(const char *url, struct CKMemoryStruct *response) {
         return 1;
     }
 
-    status = curl_easy_getinfo(curl_handle, CURLINFO_RESPONSE_CODE, &result_code);
+    status = curl_easy_getinfo(
+        curl_handle, CURLINFO_RESPONSE_CODE, &result_code);
     if (status != 0) {
         // add ck_curl_offset (+10) to curlcode for later parsing
         ck_errno = CK_ERR_CURL_OFFSET + status;
@@ -115,6 +121,9 @@ cronkite_request(const char *url, struct CKMemoryStruct *response) {
     return 0;
 }
 
+/* wrapper that performs the aur fetch functionality.
+   takes a query-type and a query term, and returns
+   a string of json data (returned from the aur) */
 static char *
 cronkite_ifetch(const char *qtype, const char *term) {
     ck_errno = CK_ERR_OK;
@@ -156,15 +165,16 @@ cronkite_ifetch(const char *qtype, const char *term) {
         ck_errno = CK_ERR_EMPTY;
         return NULL;
     }
-    result = calloc(jdata.size + 1, sizeof(char));
-    int len = strlen(jdata.memory);
-    strncpy(result, jdata.memory, len);
+    result = calloc(jdata.size, sizeof(char));
+    strncpy(result, jdata.memory, jdata.size);
+
     /* cleanup */
     free(jdata.memory);
     free(url);
     return result;
 }
 
+/* returns a json object parse partial string */
 static char *
 cronkite_get_obj(cJSON *elem, char *name) {
     char *rval;
@@ -174,7 +184,7 @@ cronkite_get_obj(cJSON *elem, char *name) {
     element = cJSON_GetObjectItem(elem, name);
     if (element && element->valuestring) {
         len = strlen(element->valuestring);
-        rval = (char *)calloc(len+1, sizeof(char *));
+        rval = (char *)calloc(len+1, sizeof(char));
         strncpy(rval, element->valuestring, len);
         rval[len] = '\0'; /* make sure it is null terminated */
     }
@@ -184,9 +194,10 @@ cronkite_get_obj(cJSON *elem, char *name) {
     return rval;
 }
 
+/* convert a json package array into a cronkite package struct */
 static CKPackage *
 cronkite_pack_result(cJSON *pkg_p) {
-    CKPackage *pkg = (CKPackage *) calloc(1, sizeof(CKPackage));
+    CKPackage *pkg = (CKPackage *) malloc(sizeof(CKPackage));
     pkg->values[CK_PKG_ID] = cronkite_get_obj(pkg_p, "id");
     pkg->values[CK_PKG_URL] = cronkite_get_obj(pkg_p, "url");
     pkg->values[CK_PKG_NAME] = cronkite_get_obj(pkg_p, "name");
@@ -201,6 +212,8 @@ cronkite_pack_result(cJSON *pkg_p) {
     return pkg;
 }
 
+/* iterate through json data, generate package structs, and return
+   a linked list of cronkite package structs */
 static CKPackage *
 cronkite_json_to_packlist(char *jsondata) {
     ck_errno = CK_ERR_OK;
@@ -240,6 +253,7 @@ cronkite_json_to_packlist(char *jsondata) {
     return head;
 }
 
+/* free allocated memory descending a package struct linked list */
 void 
 cronkite_cleanup(CKPackage *ckpackage) {
     ck_errno = CK_ERR_OK;
@@ -267,6 +281,7 @@ cronkite_cleanup(CKPackage *ckpackage) {
     }
 }
 
+/* exported get interface. */
 CKPackage *
 cronkite_get(const char t, const char *term) {
     ck_errno = CK_ERR_OK;
@@ -311,6 +326,9 @@ cronkite_get(const char t, const char *term) {
     return pkg_list;
 }
 
+/* shortcut helper function that converts jsondata directly into
+   a cronkite package struct linked list. useful if you just want
+   json parsing and package struct building, but not fetching */
 CKPackage *
 cronkite_json_conv(char *jsondata) {
     ck_errno = CK_ERR_OK;
@@ -324,6 +342,7 @@ cronkite_json_conv(char *jsondata) {
     return pkg_list;
 }
 
+/* looks up the error value, and returns a human readable string */
 const char *
 cronkite_strerror(int ck_err_val) {
     if (ck_err_val < CK_ERR_CURL_OFFSET) {
@@ -359,6 +378,7 @@ cronkite_strerror(int ck_err_val) {
     return "Hurrrrrrrr....."; //should never be reached
 }
 
+/* set options for later use in the library */
 void
 cronkite_setopt(int opt, const char *val) {
     if (!g_options) {
