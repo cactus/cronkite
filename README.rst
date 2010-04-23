@@ -11,6 +11,7 @@ Build requirements:
 
 - gcc
 - cmake
+- make
 - libcurl
 
 Optional build requirements:
@@ -97,9 +98,8 @@ example cli application:
 - cronkite(3) - manpage for the libcronkite exposed functions.
 - cronkite(1) - manpage for the example cli application.
 
-. To get more information about using the library, see
-the manpages, and/or reference the example cli application code (included in
-src/cli/).
+To get more information about using the library, see the manpages, and/or
+reference the example cli application code (included in src/cli/).
 
 License
 -------
