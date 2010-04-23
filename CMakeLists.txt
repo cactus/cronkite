@@ -56,3 +56,4 @@ endif(NOT VALGRIND_FOUND)
 
 ## subdir inclues / conditional includes
 subdirs(src)
+subdirs(man)
