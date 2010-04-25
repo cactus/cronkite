@@ -32,7 +32,7 @@ static void
 print_pkgs(CKPackage *pkg) {
     char *delimiter;
     char *default_delimiter = "\t";
-    int rsize = sizeof(pkg->values)/sizeof(char *);
+    int rsize = (int) (sizeof(pkg->values)/sizeof(char *));
 
     delimiter = getenv("CRONKITE_DELIMITER");
     if (delimiter == NULL) {

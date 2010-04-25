@@ -184,7 +184,7 @@ cronkite_get_obj(cJSON *elem, char *name) {
     element = cJSON_GetObjectItem(elem, name);
     if (element && element->valuestring) {
         len = strlen(element->valuestring);
-        rval = (char *)calloc(len+1, sizeof(char));
+        rval = calloc(len+1, sizeof(char));
         strncpy(rval, element->valuestring, len);
         rval[len] = '\0'; /* make sure it is null terminated */
     }
