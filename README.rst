@@ -45,31 +45,11 @@ There are a few build options, and their defaults, that you can specify:
   | Specifies the build type for make based generators.
   | Possible values: Debug, Release, MinSizeRel
 
-- **BUILD_LUA_MODULE** = ``OFF``
-
-  Build the lua module (luacronkite) extension.
-
-- **BUILD_PYTHON_CMODULE** = ``OFF``
-
-  Build python cmodule style extension (pycronkite.py).
-
-- **BUILD_PYTHON_CTYPES** = ``OFF``
-
-  Build python ctypes style extension (cronkite.so).
-
-- **BUILD_EXAMPLE_CLI** = ``OFF``
-
-  Build the example cli frontend (cronkite-cli).
-
-- **BUILD_ALL** = ``OFF``
-
-  Build everything -- all modules and frontends.
-
 An example of the build steps::
 
     $ mkdir build
     $ cd build
-    $ cmake -DCMAKE_INSTALL_PREFIX=/usr/local -DBUILD_ALL=ON ..
+    $ cmake -DCMAKE_INSTALL_PREFIX=/usr/local ..
     $ make
 
 
