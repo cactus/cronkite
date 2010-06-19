@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 OUTPUT=$(${1} -search a 2>&1)
 rval=$?
 # echo it out once just for ctest -V output

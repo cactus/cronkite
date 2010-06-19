@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 export CRONKITE_AURURL=""
 OUTPUT=$(${1} -search example 2>&1)
 rval=$?
