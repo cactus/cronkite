@@ -6,18 +6,20 @@ set(API_VERSION "0.6.0")
 set(PROJECT_VERSION ${BUILD_VERSION})
 
 set(CFP "-std=c99 -pedantic -Wall -Wextra -Werror -pipe")
+set(CFP_DEBUG "-g ${CFP}")
+MESSAGE("${CMAKE_SYSTEM_NAME}")
 if(APPLE)
     set(CMAKE_OSX_ARCHITECTURES ppc;i386;x86_64)
-    set(CMAKE_C_FLAGS_MINSIZEREL "${CFP} -Os $ENV{CFLAGS}")
-    set(CMAKE_C_FLAGS_RELEASE "${CFP} -O2 $ENV{CFLAGS}")
-    set(CMAKE_C_FLAGS_DEBUG "-g ${CFP} $ENV{CFLAGS}")
 else(APPLE)
+    set(CFP_DEBUG "-fPIC ${CFP_DEBUG}")
+    set(CFP "-fPIC -mtune=generic ${CFP}")
     set(CMAKE_SHARED_LINKER_FLAGS 
-        "-Wl,--hash-style=gnu -Wl,--as-needed -Wl,--no-undefined $ENV{LDFLAGS}")
-    set(CMAKE_C_FLAGS_DEBUG "-fpic -g ${CFP} $ENV{CFLAGS}")
-    set(CMAKE_C_FLAGS_RELEASE "-fpic ${CFP} -mtune=generic -O2 $ENV{CFLAGS}")
-    set(CMAKE_C_FLAGS_MINSIZEREL "-fpic ${CFP} -mtune=generic -Os $ENV{CFLAGS}")
+        "-Wl,--as-needed -Wl,--no-undefined $ENV{LDFLAGS}")
 endif(APPLE)
+
+set(CMAKE_C_FLAGS_DEBUG "${CFP_DEBUG} $ENV{CFLAGS}")
+set(CMAKE_C_FLAGS_RELEASE "${CFP} -O2 $ENV{CFLAGS}")
+set(CMAKE_C_FLAGS_MINSIZEREL "${CFP} -Os $ENV{CFLAGS}")
 
 ## set a default build type if not set
 if(NOT CMAKE_BUILD_TYPE)
