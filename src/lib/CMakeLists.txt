@@ -1,6 +1,6 @@
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 find_package(CURL)
-include(${CURL_INCLUDE_DIRS})
+include_directories(${CURL_INCLUDE_DIRS})
 
 configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/config.h.in
