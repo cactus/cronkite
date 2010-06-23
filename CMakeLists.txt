@@ -7,7 +7,7 @@ set(PROJECT_VERSION ${BUILD_VERSION})
 
 set(CFP "-std=c99 -pedantic -Wall -Wextra -Werror -pipe")
 set(CFP_DEBUG "-g ${CFP}")
-MESSAGE("${CMAKE_SYSTEM_NAME}")
+
 if(APPLE)
     set(CMAKE_OSX_ARCHITECTURES ppc;i386;x86_64)
 else(APPLE)
