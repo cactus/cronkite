@@ -84,5 +84,5 @@ reference the example cli application code (included in src/cli/).
 License
 -------
 
-Apache License, Version 2.0 <http://www.apache.org/licenses/LICENSE-2.0>
-
+Free use of this software is granted under the terms of the MIT (X11) License.
+See LICENSE file for more information.
