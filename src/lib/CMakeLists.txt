@@ -4,7 +4,7 @@ include_directories(${CURL_INCLUDE_DIRS})
 
 configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/config.h.in
-    config.h @ONLY)
+    ${CMAKE_CURRENT_BINARY_DIR}/config.h @ONLY)
 
 # search for includes in here too
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../cJSON)

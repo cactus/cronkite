@@ -5,7 +5,7 @@ link_directories(${CMAKE_CURRENT_BINARY_DIR}/../lib/)
 
 configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/cli.h.in
-    cli.h @ONLY)
+    ${CMAKE_CURRENT_BINARY_DIR}/cli.h @ONLY)
 
 # build cronkite cli binary
 add_executable(cli cli.c)
