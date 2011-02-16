@@ -34,7 +34,7 @@ Search for a package by 'SEARCH-TERM'.
 
 Get info for a package named 'PKG-NAME'.
 
-=item B<version>
+=item B<-version>
 
 Show version and exit.
 
