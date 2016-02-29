@@ -103,7 +103,7 @@ Bugs!? No way! :P
 
 =head1 AUTHOR
 
-cactus <elij.mx@gmail.com>
+cactus
 
 
 =head1 RESOURCES
