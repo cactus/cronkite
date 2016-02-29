@@ -87,7 +87,7 @@ Quite possible. Submit bugs to the github site listed in L</RESOURCES> below.
 
 =head1 AUTHOR
 
-cactus <elij.mx@gmail.com>
+cactus
 
 
 =head1 RESOURCES
